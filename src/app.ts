@@ -1,0 +1,57 @@
+import express, {Application} from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import session from "express-session";
+import cors from "cors";
+import error from "./middlewares/errorMiddleware";
+import userRouter from "./routes/userRoute";
+
+// routers
+
+// Load environment variables
+dotenv.config();
+
+const app: Application = express();
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/bookingAppointment";
+const SERVER_URL = process.env.SERVER_URL || "http://localhost";
+const SESSION_SECRET = process.env.TOKEN_SECRET || "150131091ad22d4e4acecd1340fef3d6cef0477a3745520756e19c9f2021f37f18bb45aa135049ee36d4ad7439dc8cad72d928c95332c6b8da59c56521d85a56"
+
+
+app.use(
+    cors({
+        origin: "*",
+        methods: "GET, PATCH, POST, DELETE",
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
+    })
+);
+app.use(express.json());
+app.use(error);
+
+app.use(
+    session({
+        secret: SESSION_SECRET,
+        resave: false,
+        saveUninitialized: true
+    })
+);
+
+
+app.use("/api/user", userRouter);
+
+mongoose
+    .connect(MONGO_URI as string)
+    .then(() => {
+        console.log("Connected to MongoDB");
+        app.listen(PORT, () => {
+            console.log(`Backend running on ${SERVER_URL}:${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error("Error connecting to MongoDB:", err);
+    });
+
+app.get("/", (req, res) => {
+    res.send("Hello World");
+});
