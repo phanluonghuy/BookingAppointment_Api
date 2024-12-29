@@ -16,6 +16,7 @@ interface IUser extends Document {
     address: string;
     dateOfBirth: Date;
     isVerified: boolean;
+    isFemale : boolean;
     bio: string;
     experience: number;
     role: "doctor" | "patient";
@@ -92,7 +93,8 @@ const userSchema = new Schema<IUser>(
             validate: {
                 validator: (value: string) => {
                     if (value === "N/A") return true;
-                    const regexPhoneNumber = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
+                    // const regexPhoneNumber = /(84)+([0-9]{8})\b/g;
+                    const regexPhoneNumber = /^84\d{9,10}$/;
                     return value.match(regexPhoneNumber) ? true : false;
                 },
                 // value === "N/A" || validator.isMobilePhone(value, "vi-VN", { strictMode: true }),
@@ -123,7 +125,9 @@ const userSchema = new Schema<IUser>(
         },
         isVerified: { type: Boolean, default: false },
 
-        bio: { type: String, default: "N/A" },
+        isFemale: { type: Boolean, default: false },
+
+        bio: { type: String, default: "Bio." },
 
         experience: { type: Number, default: 0 },
 

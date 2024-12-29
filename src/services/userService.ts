@@ -27,6 +27,7 @@ export const userService = {
             password: body.password,
             phone: body.phone,
             dateOfBirth: body.dateOfBirth,
+            isFemale: body.isFemale,
         });
 
         // if (file) {
@@ -38,7 +39,7 @@ export const userService = {
 
         try {
             await user.save();
-            res.status(201).json({
+            res.json({
                 acknowledgement: true,
                 message: "Created",
                 description: "User created successfully",
@@ -46,7 +47,7 @@ export const userService = {
             return;
         } catch (error) {
             console.error("Error:", error);
-            res.status(500).json({
+            res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: "User creation failed",
@@ -204,7 +205,7 @@ export const userService = {
         const user = await User.findOne({email: req.body.email});
         console.log("User:", req.body);
         if (!user) {
-            res.status(404).json({
+            res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: "User not found",
@@ -213,7 +214,7 @@ export const userService = {
         } else {
             if (user.comparePassword(req.body.password, user.password)) {
                 if (user.status === "inactive") {
-                    res.status(401).json({
+                    res.json({
                         acknowledgement: false,
                         message: "Error",
                         description: "User account is inactive",
