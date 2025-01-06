@@ -2,7 +2,11 @@ import mongoose, { Document, Schema } from "mongoose";
 
 interface IWorkSchedule extends Document {
     doctorId: mongoose.Types.ObjectId;
-    availableTimes: mongoose.Types.ObjectId[];
+    availableTimes: {
+        dayOfWeek: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
+        startTime: string; // In HH:mm format
+        endTime: string;   // In HH:mm format
+    }[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -16,9 +20,27 @@ const WorkScheduleSchema: Schema<IWorkSchedule> = new Schema<IWorkSchedule>(
         },
         availableTimes: [
             {
-                type: Schema.Types.ObjectId,
-                ref: "AvailableTime",
-                required: true,
+                dayOfWeek: {
+                    type: String,
+                    enum: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+                    required: [true, "Day of the week is required"],
+                },
+                startTime: {
+                    type: String,
+                    required: [true, "Start time is required"],
+                    validate: {
+                        validator: (value: string) => /^([01]?\d|2[0-3]):[0-5]\d$/.test(value),
+                        message: "Start time must be in HH:mm format",
+                    },
+                },
+                endTime: {
+                    type: String,
+                    required: [true, "End time is required"],
+                    validate: {
+                        validator: (value: string) => /^([01]?\d|2[0-3]):[0-5]\d$/.test(value),
+                        message: "End time must be in HH:mm format",
+                    },
+                },
             },
         ],
         createdAt: {
