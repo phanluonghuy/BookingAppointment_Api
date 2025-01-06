@@ -3,10 +3,11 @@ import mongoose, { Document, Schema } from "mongoose";
 interface IInsurance extends Document {
     patientId: mongoose.Types.ObjectId;
     insuranceProvider: string;
-    policyNumber: string;
     insuranceCardNumber: string;
     benefitLevel: "1" | "2" | "3" | "4" | "5";
-    livingAreaCode: "K1" | "K2" | "K3";
+    livingAreaCode?: "K1" | "K2" | "K3";
+    initialHealthcareFacility: string; // Nơi đăng ký khám chữa bệnh ban đầu
+    insuranceCardIssuingPlace: string; // Nơi cấp, đổi thẻ BHYT
     startDate: Date;
     endDate?: Date;
     createdAt: Date;
@@ -40,10 +41,6 @@ const InsuranceSchema: Schema<IInsurance> = new Schema<IInsurance>(
             type: String,
             required: [true, "Insurance provider is required"],
         },
-        policyNumber: {
-            type: String,
-            required: [true, "Policy number is required"],
-        },
         insuranceCardNumber: {
             type: String,
             required: [true, "Insurance card number is required"],
@@ -58,7 +55,15 @@ const InsuranceSchema: Schema<IInsurance> = new Schema<IInsurance>(
         livingAreaCode: {
             type: String,
             enum: ["K1", "K2", "K3"],
-            required: [true, "Living area code is required"],
+            required: false,
+        },
+        initialHealthcareFacility: {
+            type: String,
+            required: [true, "Initial healthcare facility is required"],
+        },
+        insuranceCardIssuingPlace: {
+            type: String,
+            required: [true, "Insurance card issuing place is required"],
         },
         startDate: {
             type: Date,
@@ -66,7 +71,7 @@ const InsuranceSchema: Schema<IInsurance> = new Schema<IInsurance>(
         },
         endDate: {
             type: Date,
-            required: [true, "End date is required"],
+            required: false,
         },
         createdAt: {
             type: Date,
@@ -87,7 +92,9 @@ InsuranceSchema.methods.getBenefitLevelDescription = function (): string {
 };
 
 InsuranceSchema.methods.getLivingAreaCodeDescription = function (): string {
-    return LivingAreaCodeDescriptions[this.livingAreaCode];
+    return this.livingAreaCode
+        ? LivingAreaCodeDescriptions[this.livingAreaCode]
+        : "";
 };
 
 const Insurance = mongoose.model<IInsurance>("Insurance", InsuranceSchema);

@@ -6,6 +6,7 @@ import cors from "cors";
 import error from "./middlewares/errorMiddleware";
 import userRouter from "./routes/userRoute";
 import allergyRouter from "./routes/allergyRoute";
+import insuranceRouter from "./routes/insuranceRoute";
 
 // routers
 
@@ -41,6 +42,7 @@ app.use(
 
 app.use("/api/user", userRouter);
 app.use("/api/allergy", allergyRouter);
+app.use("/api/insurance", insuranceRouter);
 
 mongoose
     .connect(MONGO_URI as string)
