@@ -7,6 +7,7 @@ interface IUser extends Document {
     password: string;
     role: "patient" | "doctor" | "admin";
     name: string;
+    gender: boolean;
     dateOfBirth: Date;
     status: "active" | "inactive" | "suspended";
     phone: string;
@@ -38,6 +39,10 @@ const UserSchema: Schema<IUser> = new Schema<IUser>(
         name: {
             type: String,
             required: [true, "Name is required"],
+        },
+        gender: {
+            type: Boolean,
+            required: [true, "Gender is required"],
         },
         dateOfBirth: {
             type: Date,

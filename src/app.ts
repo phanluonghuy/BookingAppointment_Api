@@ -5,6 +5,7 @@ import session from "express-session";
 import cors from "cors";
 import error from "./middlewares/errorMiddleware";
 import userRouter from "./routes/userRoute";
+import allergyRouter from "./routes/allergyRoute";
 
 // routers
 
@@ -39,6 +40,7 @@ app.use(
 
 
 app.use("/api/user", userRouter);
+app.use("/api/allergy", allergyRouter);
 
 mongoose
     .connect(MONGO_URI as string)
