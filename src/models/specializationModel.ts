@@ -3,9 +3,13 @@ import mongoose, { Document, Schema } from "mongoose";
 interface ISpecialization extends Document {
     doctorId: mongoose.Types.ObjectId;
     specializations: string[];
-    qualifications: mongoose.Types.ObjectId[];
+    qualifications: {
+        degree: string;
+        institution: string;
+        year: number;
+        certificateNumber: string;
+    }[];
     experienceYears: number;
-    licenseNumber: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -25,8 +29,26 @@ const SpecializationSchema: Schema<ISpecialization> = new Schema<ISpecialization
         ],
         qualifications: [
             {
-                type: Schema.Types.ObjectId,
-                ref: "Qualification",
+                degree: {
+                    type: String,
+                    required: [true, "Degree is required"],
+                },
+                institution: {
+                    type: String,
+                    required: [true, "Institution is required"],
+                },
+                year: {
+                    type: Number,
+                    required: [true, "Year is required"],
+                    validate: {
+                        validator: (value: number) => Number.isInteger(value) && value > 0,
+                        message: "Year must be a positive integer",
+                    },
+                },
+                certificateNumber: {
+                    type: String,
+                    required: [true, "Certificate number is required"],
+                },
             },
         ],
         experienceYears: {
@@ -36,10 +58,6 @@ const SpecializationSchema: Schema<ISpecialization> = new Schema<ISpecialization
                 validator: (value: number) => Number.isInteger(value) && value >= 0,
                 message: "Experience years must be a non-negative integer",
             },
-        },
-        licenseNumber: {
-            type: String,
-            required: [true, "License number is required"],
         },
         createdAt: {
             type: Date,

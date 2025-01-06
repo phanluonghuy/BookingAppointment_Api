@@ -7,6 +7,7 @@ import error from "./middlewares/errorMiddleware";
 import userRouter from "./routes/userRoute";
 import allergyRouter from "./routes/allergyRoute";
 import insuranceRouter from "./routes/insuranceRoute";
+import specializationRouter from "./routes/specializationRoute";
 
 // routers
 
@@ -43,6 +44,7 @@ app.use(
 app.use("/api/user", userRouter);
 app.use("/api/allergy", allergyRouter);
 app.use("/api/insurance", insuranceRouter);
+app.use("/api/specialization", specializationRouter);
 
 mongoose
     .connect(MONGO_URI as string)
