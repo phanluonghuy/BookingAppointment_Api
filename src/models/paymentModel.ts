@@ -18,7 +18,6 @@ interface IPayment extends Document {
     updatedAt: Date;
 }
 
-// Define the Payment schema
 const PaymentSchema: Schema<IPayment> = new Schema<IPayment>(
     {
         patientId: {

@@ -11,6 +11,7 @@ import specializationRouter from "./routes/specializationRoute";
 import workScheduleRouter from "./routes/workScheduleRoute";
 import ratingAndReviewRouter from "./routes/ratingAndReviewRoute";
 import appointmentRouter from "./routes/appointmentRoute";
+import paymentRouter from "./routes/paymentRoute";
 
 // routers
 
@@ -51,6 +52,7 @@ app.use("/api/specialization", specializationRouter);
 app.use("/api/work-schedule", workScheduleRouter);
 app.use("/api/rating-review", ratingAndReviewRouter);
 app.use("/api/appointment", appointmentRouter);
+app.use("/api/payment", paymentRouter);
 
 mongoose
     .connect(MONGO_URI as string)
