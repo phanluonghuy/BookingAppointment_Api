@@ -7,7 +7,7 @@ interface IAppointment extends Document {
     status: "pending" | "confirmed" | "completed" | "cancelled";
     symptoms: string;
     notes?: string;
-    queueNumber?: number;
+    queueNumber: number;
     priority: "low" | "medium" | "high";
     createdAt: Date;
     updatedAt: Date;
@@ -44,7 +44,7 @@ const AppointmentSchema: Schema<IAppointment> = new Schema<IAppointment>(
         },
         queueNumber: {
             type: Number,
-            required: false,
+            required: true,
             min: [1, "Queue number must be at least 1"],
         },
         priority: {
