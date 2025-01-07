@@ -9,6 +9,7 @@ import allergyRouter from "./routes/allergyRoute";
 import insuranceRouter from "./routes/insuranceRoute";
 import specializationRouter from "./routes/specializationRoute";
 import workScheduleRouter from "./routes/workScheduleRoute";
+import ratingAndReviewRouter from "./routes/ratingAndReviewRoute";
 
 // routers
 
@@ -47,6 +48,7 @@ app.use("/api/allergy", allergyRouter);
 app.use("/api/insurance", insuranceRouter);
 app.use("/api/specialization", specializationRouter);
 app.use("/api/work-schedule", workScheduleRouter);
+app.use("/api/rating-review", ratingAndReviewRouter);
 
 mongoose
     .connect(MONGO_URI as string)

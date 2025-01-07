@@ -12,7 +12,7 @@ const ReviewSchema: Schema<IReview> = new Schema<IReview>(
     {
         doctorId: {
             type: Schema.Types.ObjectId,
-            ref: "Doctor",
+            ref: "User",
             required: [true, "Doctor ID is required"],
         },
         averageRating: {
