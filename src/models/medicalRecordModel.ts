@@ -3,7 +3,6 @@ import mongoose, { Document, Schema } from "mongoose";
 interface IMedicalRecord extends Document {
     appointmentId: mongoose.Types.ObjectId;
     diagnosis: string;
-    symptoms: string;
     notes?: string;
     createdAt: Date;
     updatedAt: Date;
@@ -19,11 +18,6 @@ const MedicalRecordSchema: Schema<IMedicalRecord> = new Schema<IMedicalRecord>(
         diagnosis: {
             type: String,
             required: [true, "Diagnosis is required"],
-            trim: true,
-        },
-        symptoms: {
-            type: String,
-            required: [true, "Symptoms are required"],
             trim: true,
         },
         notes: {

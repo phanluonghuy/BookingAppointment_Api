@@ -5,9 +5,9 @@ export const medicalRecordService = {
     // Create a new medical record
     createMedicalRecord: async (req: Request, res: Response): Promise<Response> => {
         try {
-            const { appointmentId, diagnosis, symptoms, notes } = req.body;
+            const { appointmentId, diagnosis, notes } = req.body;
 
-            if (!appointmentId || !diagnosis || !symptoms) {
+            if (!appointmentId || !diagnosis) {
                 return res.status(400).json({
                     acknowledgement: false,
                     message: "Appointment ID, diagnosis, and symptoms are required",
@@ -17,7 +17,6 @@ export const medicalRecordService = {
             const medicalRecord = new MedicalRecord({
                 appointmentId,
                 diagnosis,
-                symptoms,
                 notes,
             });
 
@@ -95,7 +94,7 @@ export const medicalRecordService = {
     updateMedicalRecord: async (req: Request, res: Response): Promise<Response> => {
         try {
             const { id } = req.params;
-            const { diagnosis, symptoms, notes } = req.body;
+            const { diagnosis, notes } = req.body;
 
             const medicalRecord = await MedicalRecord.findById(id);
 
@@ -107,7 +106,6 @@ export const medicalRecordService = {
             }
 
             if (diagnosis) medicalRecord.diagnosis = diagnosis;
-            if (symptoms) medicalRecord.symptoms = symptoms;
             if (notes) medicalRecord.notes = notes;
             medicalRecord.updatedAt = new Date();
 

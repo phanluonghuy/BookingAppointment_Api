@@ -13,6 +13,7 @@ import ratingAndReviewRouter from "./routes/ratingAndReviewRoute";
 import appointmentRouter from "./routes/appointmentRoute";
 import paymentRouter from "./routes/paymentRoute";
 import medicalRecordRouter from "./routes/medicalRecordRoute";
+import examinationRouter from "./routes/examinationRoute";
 
 // routers
 
@@ -55,6 +56,7 @@ app.use("/api/rating-review", ratingAndReviewRouter);
 app.use("/api/appointment", appointmentRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/medical-record", medicalRecordRouter);
+app.use("/api/examination", examinationRouter);
 
 mongoose
     .connect(MONGO_URI as string)
