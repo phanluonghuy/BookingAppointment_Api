@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-interface IHealStatus extends Document {
+interface IHealthStatus extends Document {
     patient: mongoose.Types.ObjectId;
     bloodPressure: string;
     heartRate: number;
@@ -11,7 +11,7 @@ interface IHealStatus extends Document {
     updatedAt: Date;
 }
 
-const HealStatusSchema: Schema<IHealStatus> = new Schema<IHealStatus>(
+const HealthStatusSchema: Schema<IHealthStatus> = new Schema<IHealthStatus>(
     {
         patient: {
             type: Schema.Types.ObjectId,
@@ -57,5 +57,5 @@ const HealStatusSchema: Schema<IHealStatus> = new Schema<IHealStatus>(
     }
 );
 
-const HealStatus = mongoose.model<IHealStatus>("HealStatus", HealStatusSchema);
-export default HealStatus;
+const HealthStatus = mongoose.model<IHealthStatus>("HealthStatus", HealthStatusSchema);
+export default HealthStatus;

@@ -10,7 +10,6 @@ interface ITestResult extends Document {
         fileName: string;
         fileType: string;
     };
-    healStatusId: mongoose.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -46,11 +45,6 @@ const TestResultSchema: Schema<ITestResult> = new Schema<ITestResult>(
                 type: String,
                 default: "N/A",
             },
-        },
-        healStatusId: {
-            type: Schema.Types.ObjectId,
-            ref: "HealStatus",
-            required: [true, "Heal Status ID is required"],
         },
     },
     {

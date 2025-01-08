@@ -4,9 +4,9 @@ import TestResult from "../models/testResultModel";
 export const testResultService = {
     // Create a new TestResult
     createTestResult: async (req: Request, res: Response): Promise<Response> => {
-        const { medicalRecordId, testName, labDetails, healStatusId} = req.body;
+        const { medicalRecordId, testName, labDetails} = req.body;
 
-        if (!medicalRecordId || !testName || !healStatusId) {
+        if (!medicalRecordId || !testName) {
             return res.status(400).json({
                 acknowledgement: false,
                 message: "Medical Record ID, Test Name, and Heal Status ID are required",
@@ -18,7 +18,6 @@ export const testResultService = {
                 medicalRecordId,
                 testName,
                 labDetails,
-                healStatusId,
             });
 
             await testResult.save();
@@ -94,7 +93,7 @@ export const testResultService = {
     // Update a test result
     updateTestResult: async (req: Request, res: Response): Promise<Response> => {
         const { id } = req.params;
-        const { testName, labDetails, healStatusId } = req.body;
+        const { testName, labDetails} = req.body;
         const results: any = req.file;
 
         try {
@@ -112,9 +111,6 @@ export const testResultService = {
             }
             if (labDetails) {
                 testResult.labDetails = labDetails;
-            }
-            if (healStatusId) {
-                testResult.healStatusId = healStatusId;
             }
 
             if (results) {
@@ -142,7 +138,6 @@ export const testResultService = {
             });
         }
     },
-
 
     // Upload result file
     uploadResultFile: async (req: Request, res: Response): Promise<Response> => {
