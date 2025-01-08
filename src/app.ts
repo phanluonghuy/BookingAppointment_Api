@@ -18,6 +18,7 @@ import medicalRecordRouter from "./routes/medicalRecordRoute";
 import examinationRouter from "./routes/examinationRoute";
 import healthStatusRouter from "./routes/healthStatusRoute";
 import testResultRouter from "./routes/testResultRoute";
+import medicineRouter from "./routes/medicineRoute";
 
 // Load environment variables
 dotenv.config();
@@ -59,6 +60,7 @@ app.use("/api/medical-record", medicalRecordRouter);
 app.use("/api/examination", examinationRouter);
 app.use("/api/health-status", healthStatusRouter);
 app.use("/api/test-result", testResultRouter);
+app.use("/api/medicine", medicineRouter);
 
 mongoose
     .connect(MONGO_URI as string)
