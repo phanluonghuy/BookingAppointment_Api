@@ -14,6 +14,7 @@ import appointmentRouter from "./routes/appointmentRoute";
 import paymentRouter from "./routes/paymentRoute";
 import medicalRecordRouter from "./routes/medicalRecordRoute";
 import examinationRouter from "./routes/examinationRoute";
+import testResultRouter from "./routes/testResultRoute";
 
 // routers
 
@@ -57,6 +58,7 @@ app.use("/api/appointment", appointmentRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/medical-record", medicalRecordRouter);
 app.use("/api/examination", examinationRouter);
+app.use("/api/test-result", testResultRouter);
 
 mongoose
     .connect(MONGO_URI as string)
