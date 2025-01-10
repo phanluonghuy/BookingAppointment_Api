@@ -7,7 +7,7 @@ export const prescriptionService = {
         const { medicalRecordId, dosageDetails } = req.body;
 
         if (!medicalRecordId || !dosageDetails || !Array.isArray(dosageDetails)) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Medical record ID and dosage details are required",
             });
@@ -21,13 +21,13 @@ export const prescriptionService = {
 
             await prescription.save();
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Prescription created successfully",
                 data: prescription,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error creating prescription",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -50,18 +50,18 @@ export const prescriptionService = {
                 });
 
             if (!prescription) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Prescription not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: prescription,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving prescription",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -81,12 +81,12 @@ export const prescriptionService = {
                     },
                 });
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: prescriptions,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving prescriptions",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -103,7 +103,7 @@ export const prescriptionService = {
             const prescription = await Prescription.findById(id);
 
             if (!prescription) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Prescription not found",
                 });
@@ -118,13 +118,13 @@ export const prescriptionService = {
 
             await prescription.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Prescription updated successfully",
                 data: prescription,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error updating prescription",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -140,18 +140,18 @@ export const prescriptionService = {
             const prescription = await Prescription.findByIdAndDelete(id);
 
             if (!prescription) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Prescription not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Prescription deleted successfully",
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error deleting prescription",
                 description: error instanceof Error ? error.message : "An unknown error occurred",

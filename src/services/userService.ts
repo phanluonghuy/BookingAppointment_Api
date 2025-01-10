@@ -11,15 +11,15 @@ import sendEmail from "../utils/emailUtil";
 export const userService = {
     signUp: async (req: Request, res: Response): Promise<void> => {
         const {body} = req;
-        // console.log('Body:', body);
-        if (!body.name || !body.email || !body.password || !body.phone || !body.dateOfBirth) {
-            res.status(400).json({
+        console.log('Body:', body);
+        if (!body.name || !body.email || !body.password || !body.phone || !body.dateOfBirth || body.isFemale === undefined) {
+            res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: "All required fields must be provided",
             });
             return;
-        }
+        }        
 
         const user = new User({
             name: body.name,
@@ -27,7 +27,7 @@ export const userService = {
             password: body.password,
             phone: body.phone,
             dateOfBirth: body.dateOfBirth,
-            isFemale: body.isFemale,
+            gender: body.isFemale ? 0 : 1,
         });
 
         // if (file) {
@@ -36,6 +36,7 @@ export const userService = {
         //         public_id: file.filename,
         //     };
         // }
+        console.log("User:",user);
 
         try {
             await user.save();
@@ -59,7 +60,7 @@ export const userService = {
     //     const token = req.headers.authorization?.split(" ")[1];
 
     //     if (!token) {
-    //         res.status(401).json({
+    //         res.json({
     //             acknowledgement: false,
     //             message: "Error",
     //             description: "No token provided",
@@ -74,7 +75,7 @@ export const userService = {
     //         // console.error("Error in verifying token:", error);
 
     //         // Send a 401 response with a detailed error message
-    //         res.status(401).json({
+    //         res.json({
     //             acknowledgement: false,
     //             message: "Unauthorized", // A more descriptive message than just "Error"
     //             description:
@@ -118,13 +119,13 @@ export const userService = {
     //         ]);
 
     //     if (!user) {
-    //         res.status(404).json({
+    //         res.json({
     //             acknowledgement: false,
     //             message: "Not Found",
     //             description: "User not found",
     //         });
     //     } else {
-    //         res.status(200).json({
+    //         res.json({
     //             acknowledgement: true,
     //             message: "OK",
     //             description: "Login successful",
@@ -228,7 +229,7 @@ export const userService = {
                         role: user.role,
                         status: user.status,
                     });
-                    res.status(200).json({
+                    res.json({
                         acknowledgement: true,
                         message: "Success",
                         // description: (user.role === "guest") ? "Create Guest session successfully" : "User logged in successfully",
@@ -238,7 +239,7 @@ export const userService = {
                     return;
                 }
             } else {
-                res.status(401).json({
+                res.json({
                     acknowledgement: false,
                     message: "Error",
                     description: "Invalid password",
@@ -250,7 +251,7 @@ export const userService = {
     // forgotPassword: async (req: Request, res: Response): Promise<void> => {
     //     const user = await User.findOne({email: req.body.email});
     //     if (!user) {
-    //         res.status(404).json({
+    //         res.json({
     //             acknowledgement: false,
     //             message: "Error",
     //             description: "User not found",
@@ -259,7 +260,7 @@ export const userService = {
     //     }
     //     const resetToken = createPasswordResetToken(user._id as string);
     //     await sendEmail(resetToken, req.body.email);
-    //     res.status(200).json({
+    //     res.json({
     //         acknowledgement: true,
     //         message: "Success",
     //         description: "Sent email successfully",
@@ -284,13 +285,13 @@ export const userService = {
     //                 returnOriginal: false,
     //             }
     //         );
-    //         res.status(200).json({
+    //         res.json({
     //             acknowledgement: true,
     //             message: "Success",
     //             description: "Password updated successfully",
     //         });
     //     } else {
-    //         res.status(401).json({
+    //         res.json({
     //             acknowledgement: false,
     //             message: "Error",
     //             description: "Invalid password",
@@ -345,7 +346,7 @@ export const userService = {
     //     // await updatedUser?.updateOne({ $set: { address: address } });
     //     // console.log("User:", user);
     //     // console.log("Updated user:", updatedUser);
-    //     res.status(200).json({
+    //     res.json({
     //         acknowledgement: true,
     //         message: "OK",
     //         description: `${exitsUser?.name}'s information updated successfully`,
@@ -362,7 +363,7 @@ export const userService = {
     //     const _id = decodeResetToken(resetToken);
     //     const user = await User.findById(_id);
     //     if (!user) {
-    //         res.status(404).json({
+    //         res.json({
     //             acknowledgement: false,
     //             message: "Error",
     //             description: "User not found",
@@ -376,7 +377,7 @@ export const userService = {
     //         role: user.role,
     //         status: user.status,
     //     });
-    //     res.status(200).json({
+    //     res.json({
     //         acknowledgement: true,
     //         message: "Success",
     //         description: "User logged in successfully",
@@ -390,7 +391,7 @@ export const userService = {
     //     const _id = decodeResetToken(token as string);
     //     const user = await User.findById(_id);
     //     if (!user) {
-    //         res.status(404).json({
+    //         res.json({
     //             acknowledgement: false,
     //             message: "Error",
     //             description: "Invalid token",
@@ -399,7 +400,7 @@ export const userService = {
     //     }
     //     const hash = user.encryptedPassword(req.body.password);
     //     await user.updateOne({password: hash});
-    //     res.status(200).json({
+    //     res.json({
     //         acknowledgement: true,
     //         message: "Success",
     //         description: "Password updated successfully",
@@ -407,7 +408,7 @@ export const userService = {
     // },
     // getAllUser: async (req: Request, res: Response): Promise<void> => {
     //     const users = await User.find();
-    //     res.status(200).json({
+    //     res.json({
     //         acknowledgement: true,
     //         message: "Success",
     //         description: "All users",
@@ -417,14 +418,14 @@ export const userService = {
     // getUserById: async (req: Request, res: Response): Promise<void> => {
     //     const user = await User.findById(req.params.id);
     //     if (!user) {
-    //         res.status(404).json({
+    //         res.json({
     //             acknowledgement: false,
     //             message: "Error",
     //             description: "User not found",
     //         });
     //         return;
     //     }
-    //     res.status(200).json({
+    //     res.json({
     //         acknowledgement: true,
     //         message: "Success",
     //         description: "User found",
@@ -443,7 +444,7 @@ export const userService = {
     //         };
     //     }
     //     await User.findByIdAndUpdate(exitsUser?._id, {$set: user}, {runValidators: true});
-    //     res.status(200).json({
+    //     res.json({
     //         acknowledgement: true,
     //         message: "OK",
     //         description: `${exitsUser?.name}'s information updated successfully`,
@@ -452,7 +453,7 @@ export const userService = {
     // deleteUser: async (req: Request, res: Response): Promise<void> => {
     //     const user = await User.findById(req.params.id);
     //     if (!user) {
-    //         res.status(404).json({
+    //         res.json({
     //             acknowledgement: false,
     //             message: "Error",
     //             description: "User not found",
@@ -474,7 +475,7 @@ export const userService = {
     //     try {
     //         const user = await User.findById(_id);
     //         if (!user) {
-    //             res.status(404).json({
+    //             res.json({
     //                 acknowledgement: false,
     //                 message: "Error",
     //                 description: "User not found",
@@ -482,7 +483,7 @@ export const userService = {
     //             return;
     //         }
 
-    //         res.status(200).json({
+    //         res.json({
     //             acknowledgement: true,
     //             message: "Success",
     //             description: "Loyalty points retrieved successfully",
@@ -490,7 +491,7 @@ export const userService = {
     //         });
     //     } catch (error) {
     //         console.error("Error:", error);
-    //         res.status(500).json({
+    //         res.json({
     //             acknowledgement: false,
     //             message: "Error",
     //             description: "Failed to retrieve loyalty points",
@@ -519,7 +520,7 @@ export const userService = {
     //     try {
     //         const user = await User.findById(_id);
     //         if (!user) {
-    //             res.status(404).json({
+    //             res.json({
     //                 acknowledgement: false,
     //                 message: "Error",
     //                 description: "User not found",
@@ -528,7 +529,7 @@ export const userService = {
     //         }
 
     //         if (user.loyaltyPoints < pointsToRedeem) {
-    //             res.status(400).json({
+    //             res.json({
     //                 acknowledgement: false,
     //                 message: "Error",
     //                 description: "Insufficient loyalty points",
@@ -539,7 +540,7 @@ export const userService = {
     //         user.loyaltyPoints -= pointsToRedeem;
     //         await user.save();
 
-    //         res.status(200).json({
+    //         res.json({
     //             acknowledgement: true,
     //             message: "Success",
     //             description: "Loyalty points redeemed successfully",
@@ -547,7 +548,7 @@ export const userService = {
     //         });
     //     } catch (error) {
     //         console.error("Error:", error);
-    //         res.status(500).json({
+    //         res.json({
     //             acknowledgement: false,
     //             message: "Error",
     //             description: "Failed to redeem loyalty points",

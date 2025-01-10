@@ -14,7 +14,7 @@ export const dosageService = {
         } = req.body;
 
         if (!medicineId || !amountPerDose || !frequencyPerDay || !times || !duration) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Missing required fields: medicineId, amountPerDose, frequencyPerDay, times, or duration",
             });
@@ -32,13 +32,13 @@ export const dosageService = {
 
             await dosage.save();
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Dosage created successfully",
                 data: dosage,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error creating dosage",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -54,18 +54,18 @@ export const dosageService = {
             const dosage = await Dosage.findById(id).populate("medicineId");
 
             if (!dosage) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Dosage not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: dosage,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving dosage",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -78,12 +78,12 @@ export const dosageService = {
         try {
             const dosages = await Dosage.find().populate("medicineId");
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: dosages,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving dosages",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -100,7 +100,7 @@ export const dosageService = {
             const dosage = await Dosage.findById(id);
 
             if (!dosage) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Dosage not found",
                 });
@@ -116,13 +116,13 @@ export const dosageService = {
 
             await dosage.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Dosage updated successfully",
                 data: dosage,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error updating dosage",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -138,18 +138,18 @@ export const dosageService = {
             const dosage = await Dosage.findByIdAndDelete(id);
 
             if (!dosage) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Dosage not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Dosage deleted successfully",
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error deleting dosage",
                 description: error instanceof Error ? error.message : "An unknown error occurred",

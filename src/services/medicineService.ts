@@ -8,7 +8,7 @@ export const medicineService = {
         const files = req.files as Express.Multer.File[];
 
         if (!name) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Medicine name is required",
             });
@@ -31,13 +31,13 @@ export const medicineService = {
 
             await medicine.save();
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Medicine created successfully",
                 data: medicine,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error creating medicine",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -53,18 +53,18 @@ export const medicineService = {
             const medicine = await Medicine.findById(id);
 
             if (!medicine) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Medicine not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: medicine,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving medicine",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -77,12 +77,12 @@ export const medicineService = {
         try {
             const medicines = await Medicine.find();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: medicines,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving medicines",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -100,7 +100,7 @@ export const medicineService = {
             const medicine = await Medicine.findById(id);
 
             if (!medicine) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Medicine not found",
                 });
@@ -123,13 +123,13 @@ export const medicineService = {
 
             await medicine.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Medicine updated successfully",
                 data: medicine,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error updating medicine",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -145,18 +145,18 @@ export const medicineService = {
             const deletedMedicine = await Medicine.findByIdAndDelete(id);
 
             if (!deletedMedicine) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Medicine not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Medicine deleted successfully",
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error deleting medicine",
                 description: error instanceof Error ? error.message : "An unknown error occurred",

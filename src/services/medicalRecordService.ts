@@ -8,7 +8,7 @@ export const medicalRecordService = {
             const { appointmentId, diagnosis, notes } = req.body;
 
             if (!appointmentId || !diagnosis) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Appointment ID, diagnosis, and symptoms are required",
                 });
@@ -22,13 +22,13 @@ export const medicalRecordService = {
 
             await medicalRecord.save();
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Medical record created successfully",
                 data: medicalRecord,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error creating medical record",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -44,18 +44,18 @@ export const medicalRecordService = {
             const medicalRecord = await MedicalRecord.findById(id); // .populate("appointmentId");
 
             if (!medicalRecord) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Medical record not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: medicalRecord,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving medical record",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -71,18 +71,18 @@ export const medicalRecordService = {
             const medicalRecords = await MedicalRecord.find({ appointmentId }); // .populate("appointmentId");
 
             if (!medicalRecords || medicalRecords.length === 0) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "No medical records found for this appointment",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: medicalRecords,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving medical records",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -99,7 +99,7 @@ export const medicalRecordService = {
             const medicalRecord = await MedicalRecord.findById(id);
 
             if (!medicalRecord) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Medical record not found",
                 });
@@ -111,13 +111,13 @@ export const medicalRecordService = {
 
             await medicalRecord.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Medical record updated successfully",
                 data: medicalRecord,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error updating medical record",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -133,18 +133,18 @@ export const medicalRecordService = {
             const deletedMedicalRecord = await MedicalRecord.findByIdAndDelete(id);
 
             if (!deletedMedicalRecord) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Medical record not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Medical record deleted successfully",
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error deleting medical record",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
