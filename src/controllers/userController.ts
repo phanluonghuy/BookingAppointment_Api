@@ -31,18 +31,18 @@ export const userController = {
         }
     }
     ,
-    // persistLogin: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    //     try {
+    persistLogin: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
 
-    //         await userService.persistLogin(req, res);
-    //         // const token = req.headers.authorization?.split(' ')[1];
-    //         // console.log('Token:', token);
-    //     } catch (error) {
-    //         next(error);
-    //     } finally {
-    //         console.log(`Route: ${req.url} || Method: ${req.method}`);
-    //     }
-    // },
+            await userService.persistLogin(req, res);
+            // const token = req.headers.authorization?.split(' ')[1];
+            // console.log('Token:', token);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
     signIn: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             await userService.signIn(req, res);

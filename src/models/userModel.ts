@@ -64,6 +64,7 @@ const UserSchema: Schema<IUser> = new Schema<IUser>(
         },
         avatar: {
             type: String,
+            default : "",
             required: false,
         },
         createdAt: {
