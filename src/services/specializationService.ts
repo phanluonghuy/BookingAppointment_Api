@@ -14,13 +14,13 @@ export const specializationService = {
                 experienceYears,
             });
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Specialization created successfully",
                 data: newSpecialization,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -33,13 +33,13 @@ export const specializationService = {
         try {
             const { doctorId } = req.params;
             const specializations = await Specialization.find({ doctorId }).sort({ createdAt: -1 });
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Specializations fetched successfully",
                 data: specializations,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -53,18 +53,18 @@ export const specializationService = {
             const { id } = req.params;
             const specialization = await Specialization.findById(id);
             if (!specialization) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Specialization not found",
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Specialization fetched successfully",
                 data: specialization,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -83,18 +83,18 @@ export const specializationService = {
                 { new: true, runValidators: true }
             );
             if (!updatedSpecialization) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Specialization not found",
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Specialization updated successfully",
                 data: updatedSpecialization,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -108,17 +108,17 @@ export const specializationService = {
             const { id } = req.params;
             const deletedSpecialization = await Specialization.findByIdAndDelete(id);
             if (!deletedSpecialization) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Specialization not found",
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Specialization deleted successfully",
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -137,19 +137,19 @@ export const specializationService = {
             );
 
             if (!updatedSpecialization) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Specialization not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Qualification deleted successfully",
                 data: updatedSpecialization,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",

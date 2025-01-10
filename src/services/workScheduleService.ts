@@ -7,21 +7,21 @@ export const workScheduleService = {
             const { doctorId, availableTimes } = req.body;
 
             if (!doctorId) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Doctor ID is required",
                 });
             }
 
             if (!availableTimes) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Available times are required",
                 });
             }
 
             if (!Array.isArray(availableTimes)) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Available times must be an array",
                 });
@@ -34,13 +34,13 @@ export const workScheduleService = {
 
             await workSchedule.save();
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Work schedule created successfully",
                 data: workSchedule,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -55,18 +55,18 @@ export const workScheduleService = {
             const workSchedule = await WorkSchedule.findById(id);
 
             if (!workSchedule) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Work schedule not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: workSchedule,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -81,18 +81,18 @@ export const workScheduleService = {
             const workSchedule = await WorkSchedule.findOne({ doctorId });
 
             if (!workSchedule) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Work schedule not found for this doctor",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: workSchedule,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -106,7 +106,7 @@ export const workScheduleService = {
             const { availableTimes } = req.body;
 
             if (availableTimes && !Array.isArray(availableTimes)) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Available times must be an array",
                 });
@@ -115,7 +115,7 @@ export const workScheduleService = {
             const workSchedule = await WorkSchedule.findById(id);
 
             if (!workSchedule) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Work schedule not found",
                 });
@@ -129,13 +129,13 @@ export const workScheduleService = {
 
             await workSchedule.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Work schedule updated successfully",
                 data: workSchedule,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -150,18 +150,18 @@ export const workScheduleService = {
             const deletedWorkSchedule = await WorkSchedule.findByIdAndDelete(id);
 
             if (!deletedWorkSchedule) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Work schedule not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Work schedule deleted successfully",
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -182,19 +182,19 @@ export const workScheduleService = {
             );
 
             if (!workSchedule) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Work schedule not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Available time removed successfully",
                 data: workSchedule,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",

@@ -9,7 +9,7 @@ export const ratingAndReviewService = {
             const { patientId, rating, comment, doctorId } = req.body;
 
             if (!patientId || !rating || !doctorId) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Patient ID, rating, and doctor ID are required",
                 });
@@ -36,13 +36,13 @@ export const ratingAndReviewService = {
 
             await review.save();
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Rating created successfully",
                 data: newRating,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error creating rating",
                 description: error instanceof Error ? error.message : "Unknown error",
@@ -56,7 +56,7 @@ export const ratingAndReviewService = {
 
             const deletedRating = await Rating.findByIdAndDelete(ratingId);
             if (!deletedRating) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Rating not found",
                 });
@@ -76,12 +76,12 @@ export const ratingAndReviewService = {
                 await review.save();
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Rating deleted successfully",
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error deleting rating",
                 description: error instanceof Error ? error.message : "Unknown error",
@@ -96,18 +96,18 @@ export const ratingAndReviewService = {
             const review = await Review.findOne({ doctorId }).populate("ratings");
 
             if (!review) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Review not found for this doctor",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: review,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error fetching review",
                 description: error instanceof Error ? error.message : "Unknown error",

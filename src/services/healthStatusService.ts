@@ -7,7 +7,7 @@ export const healthStatusService = {
         const { patient, bloodPressure, heartRate, temperature, weight, notes } = req.body;
 
         if (!patient) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Patient ID is required",
             });
@@ -25,13 +25,13 @@ export const healthStatusService = {
 
             await healthStatus.save();
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Health status created successfully",
                 data: healthStatus,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error creating health status",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -47,18 +47,18 @@ export const healthStatusService = {
             const healthStatus = await HealthStatus.findById(id); // .populate("patient");
 
             if (!healthStatus) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Health status not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: healthStatus,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving health status",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -74,18 +74,18 @@ export const healthStatusService = {
             const healthStatuses = await HealthStatus.find({ patient: patientId });
 
             if (!healthStatuses || healthStatuses.length === 0) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "No health statuses found for this patient",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: healthStatuses,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving health statuses",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -102,7 +102,7 @@ export const healthStatusService = {
             const healthStatus = await HealthStatus.findById(id);
 
             if (!healthStatus) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Health status not found",
                 });
@@ -118,13 +118,13 @@ export const healthStatusService = {
 
             await healthStatus.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Health status updated successfully",
                 data: healthStatus,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error updating health status",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -140,18 +140,18 @@ export const healthStatusService = {
             const deletedHealthStatus = await HealthStatus.findByIdAndDelete(id);
 
             if (!deletedHealthStatus) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Health status not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Health status deleted successfully",
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error deleting health status",
                 description: error instanceof Error ? error.message : "An unknown error occurred",

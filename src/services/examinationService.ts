@@ -7,7 +7,7 @@ export const examinationService = {
         const { medicalRecordId, notes, observations } = req.body;
 
         if (!medicalRecordId || !observations || !Array.isArray(observations) || observations.length === 0) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Medical Record ID and at least one observation are required",
             });
@@ -22,13 +22,13 @@ export const examinationService = {
 
             await examination.save();
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Examination created successfully",
                 data: examination,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error creating examination",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -44,18 +44,18 @@ export const examinationService = {
             const examination = await Examination.findById(id);
 
             if (!examination) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Examination not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: examination,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving examination",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -71,18 +71,18 @@ export const examinationService = {
             const examinations = await Examination.find({ medicalRecordId });
 
             if (!examinations || examinations.length === 0) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "No examinations found for this Medical Record",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: examinations,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving examinations",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -99,14 +99,14 @@ export const examinationService = {
             const examination = await Examination.findById(id);
 
             if (!examination) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Examination not found",
                 });
             }
 
             if (observations && (!Array.isArray(observations) || observations.length === 0)) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Observations must be a non-empty array",
                 });
@@ -118,13 +118,13 @@ export const examinationService = {
 
             await examination.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Examination updated successfully",
                 data: examination,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error updating examination",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -140,18 +140,18 @@ export const examinationService = {
             const deletedExamination = await Examination.findByIdAndDelete(id);
 
             if (!deletedExamination) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Examination not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Examination deleted successfully",
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error deleting examination",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
