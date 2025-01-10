@@ -32,6 +32,7 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/bookingApp
 const SERVER_URL = process.env.SERVER_URL || "http://localhost";
 const SESSION_SECRET = process.env.TOKEN_SECRET || "150131091ad22d4e4acecd1340fef3d6cef0477a3745520756e19c9f2021f37f18bb45aa135049ee36d4ad7439dc8cad72d928c95332c6b8da59c56521d85a56"
 
+
 app.use(
     cors({
         origin: "*",
