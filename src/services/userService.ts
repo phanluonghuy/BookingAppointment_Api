@@ -1,6 +1,8 @@
 import {Request, Response} from "express";
 import User from "../models/userModel";
 import token from "../utils/tokenUtil";
+import {verifyEmailToken,decodeEmailToken} from "../utils/tokenUtil";
+import sendEmail from "../utils/emailUtil";
 // import remove from "../utils/removeUtil";
 // import sendEmail from "../utils/emailUtil";
 // import Cart from "../models/cartModel";
@@ -25,6 +27,7 @@ export const userService = {
             password: body.password,
             phone: body.phone,
             dateOfBirth: body.dateOfBirth,
+            isFemale: body.isFemale,
         });
 
         // if (file) {
@@ -36,7 +39,7 @@ export const userService = {
 
         try {
             await user.save();
-            res.status(201).json({
+            res.json({
                 acknowledgement: true,
                 message: "Created",
                 description: "User created successfully",
@@ -44,7 +47,7 @@ export const userService = {
             return;
         } catch (error) {
             console.error("Error:", error);
-            res.status(500).json({
+            res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: "User creation failed",
@@ -129,12 +132,80 @@ export const userService = {
     //         });
     //     }
     // },
+    getOTP : async (req: Request, res: Response): Promise<void> => {
+        const {email} = req.body;
+        console
+        if (!email) {
+            res.json({
+                acknowledgement: false,
+                message: "Error",
+                description: "Email is required",
+            });
+            return;
+        }
+        if (await User.findOne({email: email})) {
+            res.json({
+                acknowledgement: false,
+                message: "Error",
+                description: "Email already exists",
+            });
+            return;
+        }
 
+        const otp = Math.floor(1000 + Math.random() * 9000);
+        const token = verifyEmailToken(email,otp.toString());
+
+        await sendEmail(otp.toString(),email);
+        res.json({
+            acknowledgement: true,
+            message: "Success",
+            description: "OTP sent successfully",
+            data: token,
+        });
+
+
+
+    },
+    verifyOTP: async (req: Request, res: Response): Promise<void> => {
+        const {token,email,otp} = req.body;
+        const decoded = decodeEmailToken(token);
+
+        if (!decoded) {
+            res.json({
+                acknowledgement: false,
+                message: "Error",
+                description: "Invalid token",
+            });
+            return;
+        }
+        if (decoded.email !== email) {
+            res.json({
+                acknowledgement: false,
+                message: "Error",
+                description: "Invalid email",
+            });
+            return;
+        }
+        if (decoded.otp !== otp) {
+            res.json({
+                acknowledgement: false,
+                message: "Error",
+                description: "Invalid OTP",
+            });
+            return;
+        }
+        res.json({
+            acknowledgement: true,
+            message: "Success",
+            description: "OTP verified successfully",
+        });
+    }
+    ,
     signIn: async (req: Request, res: Response): Promise<void> => {
         const user = await User.findOne({email: req.body.email});
         console.log("User:", req.body);
         if (!user) {
-            res.status(404).json({
+            res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: "User not found",
@@ -143,7 +214,7 @@ export const userService = {
         } else {
             if (user.comparePassword(req.body.password, user.password)) {
                 if (user.status === "inactive") {
-                    res.status(401).json({
+                    res.json({
                         acknowledgement: false,
                         message: "Error",
                         description: "User account is inactive",
@@ -162,7 +233,7 @@ export const userService = {
                         message: "Success",
                         // description: (user.role === "guest") ? "Create Guest session successfully" : "User logged in successfully",
                         description: "User logged in successfully",
-                        token: tokenAccess,
+                        data: tokenAccess,
                     });
                     return;
                 }

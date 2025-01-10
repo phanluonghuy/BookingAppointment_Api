@@ -14,6 +14,9 @@ const userRouter = express.Router();
 
 // userRouter.post('/sign-up', upload.single("avatar"), userController.signUp);
 userRouter.post('/sign-up', userController.signUp);
+userRouter.post('/getOTP', userController.getOTP);
+userRouter.post('/verifyOTP', userController.verifyOTP);
+
 userRouter.post('/sign-in', userController.signIn);
 // userRouter.get('/me', userController.persistLogin);
 // userRouter.patch('/forgot-password', userController.forgotPassword);

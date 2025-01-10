@@ -11,6 +11,26 @@ export const userController = {
             console.log(`Route: ${req.url} || Method: ${req.method}`);
         }
     },
+    getOTP: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.getOTP(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    }
+    ,
+    verifyOTP: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.verifyOTP(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    }
+    ,
     // persistLogin: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     //     try {
 
