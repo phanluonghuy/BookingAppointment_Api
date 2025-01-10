@@ -1,0 +1,161 @@
+import { Request, Response } from "express";
+import Prescription from "../models/prescriptionModel";
+
+export const prescriptionService = {
+    // Create a new prescription
+    createPrescription: async (req: Request, res: Response): Promise<Response> => {
+        const { medicalRecordId, dosageDetails } = req.body;
+
+        if (!medicalRecordId || !dosageDetails || !Array.isArray(dosageDetails)) {
+            return res.status(400).json({
+                acknowledgement: false,
+                message: "Medical record ID and dosage details are required",
+            });
+        }
+
+        try {
+            const prescription = new Prescription({
+                medicalRecordId,
+                dosageDetails,
+            });
+
+            await prescription.save();
+
+            return res.status(201).json({
+                acknowledgement: true,
+                message: "Prescription created successfully",
+                data: prescription,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                acknowledgement: false,
+                message: "Error creating prescription",
+                description: error instanceof Error ? error.message : "An unknown error occurred",
+            });
+        }
+    },
+
+    // Get prescription by ID
+    getPrescriptionById: async (req: Request, res: Response): Promise<Response> => {
+        const { id } = req.params;
+
+        try {
+            const prescription = await Prescription.findById(id)
+                .populate("medicalRecordId")
+                .populate({
+                    path: "dosageDetails",
+                    populate: {
+                        path: "medicineId",
+                    },
+                });
+
+            if (!prescription) {
+                return res.status(404).json({
+                    acknowledgement: false,
+                    message: "Prescription not found",
+                });
+            }
+
+            return res.status(200).json({
+                acknowledgement: true,
+                data: prescription,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                acknowledgement: false,
+                message: "Error retrieving prescription",
+                description: error instanceof Error ? error.message : "An unknown error occurred",
+            });
+        }
+    },
+
+    // Get all prescriptions
+    getAllPrescriptions: async (_: Request, res: Response): Promise<Response> => {
+        try {
+            const prescriptions = await Prescription.find()
+                .populate("medicalRecordId")
+                .populate({
+                    path: "dosageDetails",
+                    populate: {
+                        path: "medicineId",
+                    },
+                });
+
+            return res.status(200).json({
+                acknowledgement: true,
+                data: prescriptions,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                acknowledgement: false,
+                message: "Error retrieving prescriptions",
+                description: error instanceof Error ? error.message : "An unknown error occurred",
+            });
+        }
+    },
+
+    // Update a prescription
+    updatePrescription: async (req: Request, res: Response): Promise<Response> => {
+        const { id } = req.params;
+        const { medicalRecordId, dosageDetails } = req.body;
+
+        try {
+            const prescription = await Prescription.findById(id);
+
+            if (!prescription) {
+                return res.status(404).json({
+                    acknowledgement: false,
+                    message: "Prescription not found",
+                });
+            }
+
+            if (medicalRecordId) prescription.medicalRecordId = medicalRecordId;
+            if (dosageDetails && Array.isArray(dosageDetails)) {
+                prescription.dosageDetails = dosageDetails;
+            }
+
+            prescription.updatedAt = new Date();
+
+            await prescription.save();
+
+            return res.status(200).json({
+                acknowledgement: true,
+                message: "Prescription updated successfully",
+                data: prescription,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                acknowledgement: false,
+                message: "Error updating prescription",
+                description: error instanceof Error ? error.message : "An unknown error occurred",
+            });
+        }
+    },
+
+    // Delete a prescription
+    deletePrescription: async (req: Request, res: Response): Promise<Response> => {
+        const { id } = req.params;
+
+        try {
+            const prescription = await Prescription.findByIdAndDelete(id);
+
+            if (!prescription) {
+                return res.status(404).json({
+                    acknowledgement: false,
+                    message: "Prescription not found",
+                });
+            }
+
+            return res.status(200).json({
+                acknowledgement: true,
+                message: "Prescription deleted successfully",
+            });
+        } catch (error) {
+            return res.status(500).json({
+                acknowledgement: false,
+                message: "Error deleting prescription",
+                description: error instanceof Error ? error.message : "An unknown error occurred",
+            });
+        }
+    },
+};
