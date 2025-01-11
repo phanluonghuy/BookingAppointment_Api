@@ -200,7 +200,6 @@ export const userService = {
       }
     }
   },
-
   // Patient
   createPatient: async (req: Request, res: Response): Promise<Response> => {
     try {
@@ -464,6 +463,33 @@ export const userService = {
     }
   },
 
+  updateInfo: async (req: Request, res: Response): Promise<void> => {
+    const token = req.headers.authorization?.split(" ")[1];
+    const _id = verifyandget_id(token as string);
+    console.log("_id:", _id);
+    const user = req.body;
+
+    const exitsUser = await User.findById(_id);
+
+    // if (!req.body.avatar && req.file) {
+    //     await remove(exitsUser!.avatar?.public_id!);
+    //     // console.log("req.avatar:", req.body.avatar);
+    //     user!.avatar = {
+    //         url: req.file.path,
+    //         public_id: req.file.filename,
+    //     };
+    // }
+
+    const updatedUser = await User.findByIdAndUpdate(exitsUser?._id, {$set: user}, {runValidators: true});
+    // await updatedUser?.updateOne({ $set: { address: address } });
+    // console.log("User:", user);
+    // console.log("Updated user:", updatedUser);
+    res.json({
+        acknowledgement: true,
+        message: "OK",
+        description: `${exitsUser?.name}'s information updated successfully`,
+    });
+},
   // forgotPassword: async (req: Request, res: Response): Promise<void> => {
   //     const user = await User.findOne({email: req.body.email});
   //     if (!user) {
@@ -483,38 +509,38 @@ export const userService = {
   //     });
   //     return;
   // },
-  // resetPassword: async (req: Request, res: Response): Promise<void> => {
-  //     const token = req.headers.authorization?.split(" ")[1];
-  //     const _id = verifyandget_id(token as string);
-  //     const user = await User.findById(_id);
-  //     // console.log("Req body:", req.body.currentPassword);
-  //     // console.log("User:", user);
-  //     if (user?.comparePassword(req.body.currentPassword, user.password)) {
-  //         const hashpassword = await user.encryptedPassword(req.body.newPassword);
-  //         await User.findByIdAndUpdate(
-  //             _id,
-  //             {
-  //                 password: hashpassword,
-  //             },
-  //             {
-  //                 runValidators: false,
-  //                 returnOriginal: false,
-  //             }
-  //         );
-  //         res.json({
-  //             acknowledgement: true,
-  //             message: "Success",
-  //             description: "Password updated successfully",
-  //         });
-  //     } else {
-  //         res.json({
-  //             acknowledgement: false,
-  //             message: "Error",
-  //             description: "Invalid password",
-  //         });
-  //         return;
-  //     }
-  // },
+  resetPassword: async (req: Request, res: Response): Promise<void> => {
+      const token = req.headers.authorization?.split(" ")[1];
+      const _id = verifyandget_id(token as string);
+      const user = await User.findById(_id);
+      // console.log("Req body:", req.body.currentPassword);
+      // console.log("User:", user);
+      if (user?.comparePassword(req.body.currentPassword, user.password)) {
+          const hashpassword = await user?.encryptedPassword(req.body.newPassword);
+          await User.findByIdAndUpdate(
+              _id,
+              {
+                  password: hashpassword,
+              },
+              {
+                  runValidators: false,
+                  returnOriginal: false,
+              }
+          );
+          res.json({
+              acknowledgement: true,
+              message: "Success",
+              description: "Password updated successfully",
+          });
+      } else {
+          res.json({
+              acknowledgement: false,
+              message: "Error",
+              description: "Invalid password",
+          });
+          return;
+      }
+  },
   // updateInfo: async (req: Request, res: Response): Promise<void> => {
   //     const token = req.headers.authorization?.split(" ")[1];
   //     const _id = verifyandget_id(token as string);

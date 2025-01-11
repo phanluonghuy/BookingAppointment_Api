@@ -19,6 +19,7 @@ interface IUser extends Document {
     };
     createdAt: Date;
     updatedAt: Date;
+    encryptedPassword(password: string): string;
     comparePassword(candidatePassword: string, hash: string): boolean;
 }
 
@@ -102,6 +103,13 @@ UserSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, salt);
     next();
 });
+
+UserSchema.methods.encryptedPassword = function (password: string): string {
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(password, salt);
+
+    return hashedPassword;
+};
 
 UserSchema.methods.comparePassword = function (
     candidatePassword: string,
