@@ -19,8 +19,7 @@ export const userController = {
         } finally {
             console.log(`Route: ${req.url} || Method: ${req.method}`);
         }
-    }
-    ,
+    },
     verifyOTP: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             await userService.verifyOTP(req, res);
@@ -29,8 +28,7 @@ export const userController = {
         } finally {
             console.log(`Route: ${req.url} || Method: ${req.method}`);
         }
-    }
-    ,
+    },
     persistLogin: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
@@ -52,6 +50,85 @@ export const userController = {
             console.log(`Route: ${req.url} || Method: ${req.method}`);
         }
     },
+
+    // Patient
+    createPatient: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.createPatient(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+    getAllPatients: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.getAllPatients(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+    getPatientById: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.getPatientById(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+    updatePatient: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.updatePatient(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+
+    // Doctor
+    createDoctor: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.createDoctor(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+    getAllDoctors: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.getAllDoctors(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+    getDoctorById: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.getDoctorById(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+    updateDoctor: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.updateDoctor(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+
+
+
     // forgotPassword: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     //     try {
     //         await userService.forgotPassword(req, res);

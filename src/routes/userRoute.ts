@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 import token from "../utils/tokenUtil";
 import User from "../models/userModel";
 import verify from "../middlewares/verifyMiddleware";
+import upload from "../middlewares/uploadMiddleware";
 
 dotenv.config()
 
@@ -20,6 +21,19 @@ userRouter.post('/verifyOTP', userController.verifyOTP);
 
 userRouter.post('/sign-in', userController.signIn);
 userRouter.get('/me',verify, userController.persistLogin);
+
+// Patient Routes
+userRouter.post("/patient", upload.single("avatar"), userController.createPatient);
+userRouter.get("/patients", userController.getAllPatients);
+userRouter.get("/patient/:id", userController.getPatientById);
+userRouter.patch("/patient/:id", upload.single("avatar"), userController.updatePatient);
+
+// Doctor Routes
+userRouter.post("/doctor", upload.single("avatar"), userController.createDoctor);
+userRouter.get("/doctors", userController.getAllDoctors);
+userRouter.get("/doctor/:id", userController.getDoctorById);
+userRouter.patch("/doctor/:id", upload.single("avatar"), userController.updateDoctor);
+
 // userRouter.patch('/forgot-password', userController.forgotPassword);
 userRouter.post('/reset-password', userController.resetPassword);
 // userRouter.patch('/change-password-token', userController.resetPasswordToken);

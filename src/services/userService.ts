@@ -200,6 +200,269 @@ export const userService = {
       }
     }
   },
+  // Patient
+  createPatient: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { email, password, name, gender, dateOfBirth, phone, address } = req.body;
+      const avatar = req.file
+          ? {
+            url: req.file.path,
+            fileName: req.file.filename,
+            fileType: req.file.mimetype,
+          }
+          : undefined;
+
+      if (!email || !password || !name) {
+        return res.json({
+          acknowledgement: false,
+          message: "Email, password, and name are required",
+        });
+      }
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.json({
+          acknowledgement: false,
+          message: "Email already exists",
+        });
+      }
+
+      const newPatient = await User.create({
+        email,
+        password,
+        role: "patient",
+        name,
+        gender,
+        dateOfBirth,
+        phone,
+        address,
+        avatar,
+      });
+
+      return res.json({
+        acknowledgement: true,
+        message: "Patient created successfully",
+        data: newPatient,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error creating patient",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
+  getAllPatients: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const patients = await User.find({ role: "patient" }).sort({ createdAt: -1 });
+      return res.json({
+        acknowledgement: true,
+        message: "Patients fetched successfully",
+        data: patients,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error fetching patients",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
+  getPatientById: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { id } = req.params;
+      const patient = await User.findOne({ _id: id, role: "patient" });
+      if (!patient) {
+        return res.json({
+          acknowledgement: false,
+          message: "Patient not found",
+        });
+      }
+      return res.json({
+        acknowledgement: true,
+        message: "Patient fetched successfully",
+        data: patient,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error fetching patient",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
+  updatePatient: async (req: Request, res: Response): Promise<Response> => {
+    const { id } = req.params;
+    const updates = req.body;
+    const avatar = req.file;
+
+    try {
+      if (avatar) {
+        updates.avatar = {
+          url: avatar.path,
+          fileName: avatar.filename,
+          fileType: avatar.mimetype,
+        };
+      }
+
+      const updatedPatient = await User.findOneAndUpdate(
+          { _id: id, role: "patient" },
+          { ...updates, updatedAt: new Date() },
+          { new: true, runValidators: true }
+      );
+
+      if (!updatedPatient) {
+        return res.json({
+          acknowledgement: false,
+          message: "Patient not found or not authorized",
+        });
+      }
+
+      return res.json({
+        acknowledgement: true,
+        message: "Patient updated successfully",
+        data: updatedPatient,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error updating patient",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
+
+  // Doctor
+  createDoctor: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { email, password, name, gender, phone, address } = req.body;
+      const avatar = req.file
+          ? {
+            url: req.file.path,
+            fileName: req.file.filename,
+            fileType: req.file.mimetype,
+          }
+          : undefined;
+
+      if (!email || !password || !name) {
+        return res.json({
+          acknowledgement: false,
+          message: "Email, password, and name are required",
+        });
+      }
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.json({
+          acknowledgement: false,
+          message: "Email already exists",
+        });
+      }
+
+      const newDoctor = await User.create({
+        email,
+        password,
+        role: "doctor",
+        name,
+        gender,
+        phone,
+        address,
+        avatar,
+      });
+
+      return res.json({
+        acknowledgement: true,
+        message: "Doctor created successfully",
+        data: newDoctor,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error creating doctor",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
+  getAllDoctors: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const doctors = await User.find({ role: "doctor" }).sort({ createdAt: -1 });
+      return res.json({
+        acknowledgement: true,
+        message: "Doctors fetched successfully",
+        data: doctors,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error fetching doctors",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
+  getDoctorById: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { id } = req.params;
+      const doctor = await User.findOne({ _id: id, role: "doctor" });
+      if (!doctor) {
+        return res.json({
+          acknowledgement: false,
+          message: "Doctor not found",
+        });
+      }
+      return res.json({
+        acknowledgement: true,
+        message: "Doctor fetched successfully",
+        data: doctor,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error fetching doctor",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
+  updateDoctor: async (req: Request, res: Response): Promise<Response> => {
+    const { id } = req.params;
+    const updates = req.body;
+    const avatar = req.file;
+
+    try {
+      if (avatar) {
+        updates.avatar = {
+          url: avatar.path,
+          fileName: avatar.filename,
+          fileType: avatar.mimetype,
+        };
+      }
+
+      const updatedDoctor = await User.findOneAndUpdate(
+          { _id: id, role: "doctor" },
+          { ...updates, updatedAt: new Date() },
+          { new: true, runValidators: true }
+      );
+
+      if (!updatedDoctor) {
+        return res.json({
+          acknowledgement: false,
+          message: "Doctor not found or not authorized",
+        });
+      }
+
+      return res.json({
+        acknowledgement: true,
+        message: "Doctor updated successfully",
+        data: updatedDoctor,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error updating doctor",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
+
   updateInfo: async (req: Request, res: Response): Promise<void> => {
     const token = req.headers.authorization?.split(" ")[1];
     const _id = verifyandget_id(token as string);
