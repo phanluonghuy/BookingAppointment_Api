@@ -118,4 +118,4 @@ function verifyandget_id(token: string): string {
 /* export token utility */
 export default token;
 // export {verifyandget_id, createPasswordResetToken, decodeResetToken};
-export {verifyEmailToken,decodeEmailToken};
+export {verifyEmailToken,decodeEmailToken,verifyandget_id};

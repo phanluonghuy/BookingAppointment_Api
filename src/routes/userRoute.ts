@@ -7,6 +7,7 @@ import {userController} from "../controllers/userController";
 import dotenv from "dotenv";
 import token from "../utils/tokenUtil";
 import User from "../models/userModel";
+import verify from "../middlewares/verifyMiddleware";
 
 dotenv.config()
 
@@ -18,7 +19,7 @@ userRouter.post('/getOTP', userController.getOTP);
 userRouter.post('/verifyOTP', userController.verifyOTP);
 
 userRouter.post('/sign-in', userController.signIn);
-// userRouter.get('/me', userController.persistLogin);
+userRouter.get('/me',verify, userController.persistLogin);
 // userRouter.patch('/forgot-password', userController.forgotPassword);
 // userRouter.patch('/reset-password', userController.resetPassword);
 // userRouter.patch('/change-password-token', userController.resetPasswordToken);
