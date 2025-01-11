@@ -7,7 +7,7 @@ export const testResultService = {
         const { medicalRecordId, testName, labDetails} = req.body;
 
         if (!medicalRecordId || !testName) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Medical Record ID, Test Name, and Heal Status ID are required",
             });
@@ -22,13 +22,13 @@ export const testResultService = {
 
             await testResult.save();
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Test result created successfully",
                 data: testResult,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error creating test result",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -44,18 +44,18 @@ export const testResultService = {
             const testResult = await TestResult.findById(id);
 
             if (!testResult) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Test result not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: testResult,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving test result",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -71,18 +71,18 @@ export const testResultService = {
             const testResults = await TestResult.find({ medicalRecordId });
 
             if (!testResults || testResults.length === 0) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "No test results found for this Medical Record",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: testResults,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving test results",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -100,7 +100,7 @@ export const testResultService = {
             const testResult = await TestResult.findById(id);
 
             if (!testResult) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Test result not found",
                 });
@@ -125,13 +125,13 @@ export const testResultService = {
 
             await testResult.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Test result updated successfully",
                 data: testResult,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error updating test result",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -144,7 +144,7 @@ export const testResultService = {
         const { id } = req.params;
 
         if (!req.file) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "No file uploaded",
             });
@@ -154,7 +154,7 @@ export const testResultService = {
             const testResult = await TestResult.findById(id);
 
             if (!testResult) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Test result not found",
                 });
@@ -169,13 +169,13 @@ export const testResultService = {
 
             await testResult.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Test result file uploaded successfully",
                 data: testResult,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error uploading result file",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -191,18 +191,18 @@ export const testResultService = {
             const deletedTestResult = await TestResult.findByIdAndDelete(id);
 
             if (!deletedTestResult) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Test result not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Test result deleted successfully",
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error deleting test result",
                 description: error instanceof Error ? error.message : "An unknown error occurred",

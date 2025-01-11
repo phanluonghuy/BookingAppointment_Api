@@ -7,7 +7,7 @@ export const notificationService = {
         const { userId, prescriptionId, paymentId, appointmentId, notificationType, message } = req.body;
 
         if (!userId || !notificationType || !message) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "User ID, notification type, and message are required",
             });
@@ -25,13 +25,13 @@ export const notificationService = {
 
             await notification.save();
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Notification created successfully",
                 data: notification,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error creating notification",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -51,18 +51,18 @@ export const notificationService = {
                 // .populate("appointmentId");
 
             if (!notification) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Notification not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: notification,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving notification",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -80,12 +80,12 @@ export const notificationService = {
                 // .populate("paymentId")
                 // .populate("appointmentId");
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: notifications,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error retrieving notifications",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -99,7 +99,7 @@ export const notificationService = {
         const { status } = req.body;
 
         if (!status || !["unread", "read"].includes(status)) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Status must be either 'unread' or 'read'",
             });
@@ -109,7 +109,7 @@ export const notificationService = {
             const notification = await Notification.findById(id);
 
             if (!notification) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Notification not found",
                 });
@@ -120,13 +120,13 @@ export const notificationService = {
 
             await notification.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Notification status updated successfully",
                 data: notification,
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error updating notification status",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -142,18 +142,18 @@ export const notificationService = {
             const notification = await Notification.findByIdAndDelete(id);
 
             if (!notification) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Notification not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Notification deleted successfully",
             });
         } catch (error) {
-            return res.status(500).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error deleting notification",
                 description: error instanceof Error ? error.message : "An unknown error occurred",

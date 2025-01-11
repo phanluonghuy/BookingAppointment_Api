@@ -8,7 +8,7 @@ export const appointmentService = {
             const { patientId, doctorId, appointmentDate, symptoms, notes} = req.body;
 
             if (!patientId || !doctorId || !appointmentDate || !symptoms) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Patient ID, Doctor ID, Appointment Date, and Symptoms are required",
                 });
@@ -40,13 +40,13 @@ export const appointmentService = {
 
             await appointment.save();
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Appointment created successfully",
                 data: appointment,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -62,18 +62,18 @@ export const appointmentService = {
             const appointment = await Appointment.findById(id);
 
             if (!appointment) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Appointment not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: appointment,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -89,18 +89,18 @@ export const appointmentService = {
             const appointments = await Appointment.find({ doctorId });
 
             if (!appointments || appointments.length === 0) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "No appointments found for this doctor",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: appointments,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -116,18 +116,18 @@ export const appointmentService = {
             const appointments = await Appointment.find({ patientId });
 
             if (!appointments || appointments.length === 0) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "No appointments found for this patient",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: appointments,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -151,18 +151,18 @@ export const appointmentService = {
             });
 
             if (!appointments || appointments.length === 0) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "No appointments found for this doctor on this date",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: appointments,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -186,18 +186,18 @@ export const appointmentService = {
             });
 
             if (!appointments || appointments.length === 0) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "No appointments found for this patient on this date",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: appointments,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -212,7 +212,7 @@ export const appointmentService = {
             const { status } = req.body;
 
             if (!status || !["pending", "confirmed", "completed", "cancelled"].includes(status)) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Status is required and must be one of 'pending', 'confirmed', 'completed', or 'cancelled'",
                 });
@@ -221,7 +221,7 @@ export const appointmentService = {
             const appointment = await Appointment.findById(id);
 
             if (!appointment) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Appointment not found",
                 });
@@ -232,13 +232,13 @@ export const appointmentService = {
 
             await appointment.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Appointment status updated successfully",
                 data: appointment,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -253,7 +253,7 @@ export const appointmentService = {
             const { priority } = req.body;
 
             if (!priority || !["low", "medium", "high"].includes(priority)) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Priority is required and must be one of 'low', 'medium', or 'high'",
                 });
@@ -262,7 +262,7 @@ export const appointmentService = {
             const appointment = await Appointment.findById(id);
 
             if (!appointment) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Appointment not found",
                 });
@@ -273,13 +273,13 @@ export const appointmentService = {
 
             await appointment.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Appointment priority updated successfully",
                 data: appointment,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -295,18 +295,18 @@ export const appointmentService = {
             const deletedAppointment = await Appointment.findByIdAndDelete(id);
 
             if (!deletedAppointment) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Appointment not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Appointment deleted successfully",
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",

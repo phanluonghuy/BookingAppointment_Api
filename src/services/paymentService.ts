@@ -17,7 +17,7 @@ export const paymentService = {
             } = req.body;
 
             if (!patientId || !appointmentId || !amount || !advanceAmount || !paymentMethod || !transactionId) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "All required fields must be provided",
                 });
@@ -27,7 +27,7 @@ export const paymentService = {
             if (isInsuranceUsed) {
                 const insurance = await Insurance.findOne({ patientId });
                 if (!insurance) {
-                    return res.status(404).json({
+                    return res.json({
                         acknowledgement: false,
                         message: "No insurance information found for this patient",
                     });
@@ -81,13 +81,13 @@ export const paymentService = {
 
             await payment.save();
 
-            return res.status(201).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Payment created successfully",
                 data: payment,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -103,18 +103,18 @@ export const paymentService = {
             const payment = await Payment.findById(id);
 
             if (!payment) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Payment not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: payment,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -130,18 +130,18 @@ export const paymentService = {
             const payments = await Payment.find({ patientId });
 
             if (!payments || payments.length === 0) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "No payments found for this patient",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: payments,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -157,18 +157,18 @@ export const paymentService = {
             const payments = await Payment.find({ appointmentId });
 
             if (!payments || payments.length === 0) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "No payments found for this appointment",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 data: payments,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -183,7 +183,7 @@ export const paymentService = {
             const { paymentMethod } = req.body;
 
             if (!paymentMethod || !["credit_card", "paypal", "bank_transfer", "cash"].includes(paymentMethod)) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Payment method is required and must be one of 'credit_card', 'paypal', 'bank_transfer', or 'cash'",
                 });
@@ -192,7 +192,7 @@ export const paymentService = {
             const payment = await Payment.findById(id);
 
             if (!payment) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Payment not found",
                 });
@@ -203,13 +203,13 @@ export const paymentService = {
 
             await payment.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Payment method updated successfully",
                 data: payment,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -224,7 +224,7 @@ export const paymentService = {
             const { status } = req.body;
 
             if (!status || !["pending", "completed", "failed"].includes(status)) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Payment status is required and must be one of 'pending', 'completed', or 'failed'",
                 });
@@ -233,7 +233,7 @@ export const paymentService = {
             const payment = await Payment.findById(id);
 
             if (!payment) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Payment not found",
                 });
@@ -244,13 +244,13 @@ export const paymentService = {
 
             await payment.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Payment status updated successfully",
                 data: payment,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -265,7 +265,7 @@ export const paymentService = {
             const { status} = req.body;
 
             if (!status || !["none", "pending", "completed", "failed"].includes(status)) {
-                return res.status(400).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Refund status is required and must be one of 'none', 'pending', 'completed', or 'failed'",
                 });
@@ -274,7 +274,7 @@ export const paymentService = {
             const payment = await Payment.findById(id);
 
             if (!payment) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Payment not found",
                 });
@@ -285,13 +285,13 @@ export const paymentService = {
 
             await payment.save();
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Refund status updated successfully",
                 data: payment,
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
@@ -307,18 +307,18 @@ export const paymentService = {
             const deletedPayment = await Payment.findByIdAndDelete(id);
 
             if (!deletedPayment) {
-                return res.status(404).json({
+                return res.json({
                     acknowledgement: false,
                     message: "Payment not found",
                 });
             }
 
-            return res.status(200).json({
+            return res.json({
                 acknowledgement: true,
                 message: "Payment deleted successfully",
             });
         } catch (error) {
-            return res.status(400).json({
+            return res.json({
                 acknowledgement: false,
                 message: "Error",
                 description: error instanceof Error ? error.message : "An unknown error occurred",
