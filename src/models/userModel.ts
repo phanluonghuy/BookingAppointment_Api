@@ -12,7 +12,11 @@ interface IUser extends Document {
     status: "active" | "inactive" | "suspended";
     phone: string;
     address: string;
-    avatar: string;
+    avatar?: { // Optional field
+        url: string;
+        fileName: string;
+        fileType: string;
+    };
     createdAt: Date;
     updatedAt: Date;
     comparePassword(candidatePassword: string, hash: string): boolean;
@@ -63,9 +67,19 @@ const UserSchema: Schema<IUser> = new Schema<IUser>(
             required: false,
         },
         avatar: {
-            type: String,
-            default : "",
-            required: false,
+            url: {
+                type: String,
+                validate: [validator.isURL, "Please provide a valid URL"],
+                default: "https://placehold.co/1000x1000/EEE/31343C?font=lato&text=Not%20Found%20File%20Avatar",
+            },
+            fileName: {
+                type: String,
+                default: "N/A",
+            },
+            fileType: {
+                type: String,
+                default: "N/A",
+            },
         },
         createdAt: {
             type: Date,
