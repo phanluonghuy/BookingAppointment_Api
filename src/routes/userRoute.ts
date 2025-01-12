@@ -37,7 +37,7 @@ userRouter.patch("/doctor/:id", upload.single("avatar"), userController.updateDo
 // userRouter.patch('/forgot-password', userController.forgotPassword);
 userRouter.post('/reset-password', userController.resetPassword);
 // userRouter.patch('/change-password-token', userController.resetPasswordToken);
-userRouter.post('/update-profile', verify, userController.updateInfo);
+userRouter.post('/update-profile', verify, upload.single("avatar"),userController.updateInfo);
 // userRouter.post('/send-reset-email', userController.sendResetEmail);
 // userRouter.get('/all-users', verify, authorize("admin"), userController.getAllUser);
 // userRouter.get('/get-user/:id', verify, authorize("admin"), userController.getUserById);

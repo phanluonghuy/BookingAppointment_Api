@@ -7,7 +7,7 @@ import {
   verifyandget_id,
 } from "../utils/tokenUtil";
 import sendEmail from "../utils/emailUtil";
-// import remove from "../utils/removeUtil";
+import remove from "../utils/removeUtil";
 // import sendEmail from "../utils/emailUtil";
 // import Cart from "../models/cartModel";
 // import Address from "../models/userAddressModel";
@@ -466,24 +466,28 @@ export const userService = {
   updateInfo: async (req: Request, res: Response): Promise<void> => {
     const token = req.headers.authorization?.split(" ")[1];
     const _id = verifyandget_id(token as string);
-    console.log("_id:", _id);
+    // console.log("_id:", _id);
     const user = req.body;
+    // console.log("Req:", req.file);
+    // console.log("Req:", req.body);
 
     const exitsUser = await User.findById(_id);
 
-    // if (!req.body.avatar && req.file) {
-    //     await remove(exitsUser!.avatar?.public_id!);
-    //     // console.log("req.avatar:", req.body.avatar);
-    //     user!.avatar = {
-    //         url: req.file.path,
-    //         public_id: req.file.filename,
-    //     };
-    // }
+    const avatar = req.file
+    ? {
+      url: req.file.path,
+      fileName: req.file.filename,
+      fileType: req.file.mimetype,
+    }
+    : undefined;
 
-    const updatedUser = await User.findByIdAndUpdate(exitsUser?._id, {$set: user}, {runValidators: true});
-    // await updatedUser?.updateOne({ $set: { address: address } });
-    // console.log("User:", user);
-    // console.log("Updated user:", updatedUser);
+    if (req.file) {
+      await remove(exitsUser!.avatar?.url as string);
+    }
+
+    user.avatar = avatar;
+
+    await User.findByIdAndUpdate(exitsUser?._id, {$set: user}, {runValidators: true});
     res.json({
         acknowledgement: true,
         message: "OK",
