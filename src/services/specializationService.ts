@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Specialization from "../models/specializationModel";
-import Qualification from "../models/qualificationModel";
 
 export const specializationService = {
     // Tạo mới một specialization
@@ -126,6 +125,7 @@ export const specializationService = {
         }
     },
 
+    // Xóa qualification theo ID
     deleteQualification: async (req: Request, res: Response): Promise<Response> => {
         try {
             const { specializationId, qualificationId } = req.params;

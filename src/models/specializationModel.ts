@@ -14,6 +14,17 @@ interface ISpecialization extends Document {
     updatedAt: Date;
 }
 
+const allowedSpecializations = [
+    "Dentist",
+    "Cardiologist",
+    "Orthopedic",
+    "Neurologist",
+    "Urologist",
+    "Pulmonologist",
+    "Gynecologist",
+    "General",
+];
+
 const SpecializationSchema: Schema<ISpecialization> = new Schema<ISpecialization>(
     {
         doctorId: {
@@ -21,12 +32,22 @@ const SpecializationSchema: Schema<ISpecialization> = new Schema<ISpecialization
             ref: "Doctor",
             required: [true, "Doctor ID is required"],
         },
-        specializations: [
-            {
-                type: String,
-                required: [true, "At least one specialization is required"],
+        specializations: {
+            type: [
+                {
+                    type: String,
+                    enum: {
+                        values: allowedSpecializations,
+                        message: "Specialization must be one of: " + allowedSpecializations.join(", "),
+                    },
+                },
+            ],
+            default: ["General"],
+            validate: {
+                validator: (array: string[]) => array.length > 0,
+                message: "At least one specialization is required",
             },
-        ],
+        },
         qualifications: [
             {
                 degree: {

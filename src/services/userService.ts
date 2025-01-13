@@ -7,6 +7,9 @@ import {
   verifyandget_id,
 } from "../utils/tokenUtil";
 import sendEmail from "../utils/emailUtil";
+import Specialization from "../models/specializationModel";
+import WorkSchedule from "../models/workScheduleModel";
+import Review from "../models/reviewModel";
 // import remove from "../utils/removeUtil";
 // import sendEmail from "../utils/emailUtil";
 // import Cart from "../models/cartModel";
@@ -462,6 +465,107 @@ export const userService = {
       });
     }
   },
+  getDoctorsBySpecialization: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { specialization } = req.query;
+
+      if (!specialization || typeof specialization !== 'string') {
+        return res.json({
+          acknowledgement: false,
+          message: "Error",
+          description: "Specialization is required",
+        });
+      }
+
+      const validSpecializations = [
+        "Dentist",
+        "Cardiologist",
+        "Orthopedic",
+        "Neurologist",
+        "Urologist",
+        "Pulmonologist",
+        "Gynecologist",
+        "General",
+      ];
+      if (!validSpecializations.includes(specialization)) {
+        return res.json({
+          acknowledgement: false,
+          message: "Error",
+          description: "Invalid specialization",
+        });
+      }
+
+      const specializations = await Specialization.find({
+        specializations: specialization,
+      });
+
+      if (!specializations || specializations.length === 0) {
+        return res.json({
+          acknowledgement: false,
+          message: "Not Found",
+          description: "No doctors found for the given specialization",
+        });
+      }
+
+      const doctorIds = specializations.map(specialization => specialization.doctorId);
+
+      const doctors = await User.find({
+        _id: { $in: doctorIds },
+        role: "doctor",
+      });
+
+      return res.json({
+        acknowledgement: true,
+        message: "Success",
+        description: "Doctors fetched successfully",
+        data: doctors,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error fetching doctors",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
+
+  getDoctorByIdWithFullInfo: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { id } = req.params;
+      const doctor = await User.findOne({ _id: id, role: "doctor" });
+      if (!doctor) {
+        return res.json({
+          acknowledgement: false,
+          message: "Doctor not found",
+        });
+      }
+
+      const specializations = await Specialization.findOne({ doctorId: id }) || undefined;
+      const workSchedule = await WorkSchedule.findOne({ doctorId: id }) || undefined;
+      const review = await Review.findOne({ doctorId:id }).populate("ratings") || undefined;
+
+      const fullInfo = {
+        doctor,
+        specializations,
+        workSchedule,
+        review
+      };
+
+      return res.json({
+        acknowledgement: true,
+        message: "Doctor fetched successfully",
+        data: fullInfo,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error fetching doctor",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
+
+
 
   updateInfo: async (req: Request, res: Response): Promise<void> => {
     const token = req.headers.authorization?.split(" ")[1];
