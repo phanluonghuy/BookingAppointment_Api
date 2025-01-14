@@ -36,7 +36,11 @@ userRouter.get("/doctors", userController.getAllDoctors);
 userRouter.get("/doctor/:id", userController.getDoctorById);
 userRouter.patch("/doctor/:id", upload.single("avatar"), userController.updateDoctor);
 
-// userRouter.patch('/forgot-password', userController.forgotPassword);
+userRouter.get("/doctor", userController.getDoctorsBySpecialization);
+userRouter.get("/doctor/:id/full-info", userController.getDoctorByIdWithFullInfo);
+
+
+// userRouter.patch("/forgot-password", userController.forgotPassword);
 userRouter.post('/reset-password', userController.resetPassword);
 userRouter.post('/change-password', userController.changePassword);
 // userRouter.patch('/change-password-token', userController.resetPasswordToken);

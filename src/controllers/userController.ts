@@ -145,6 +145,25 @@ export const userController = {
         }
     },
 
+    getDoctorsBySpecialization: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.getDoctorsBySpecialization(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+
+    getDoctorByIdWithFullInfo: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.getDoctorByIdWithFullInfo(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
 
 
     // forgotPassword: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
