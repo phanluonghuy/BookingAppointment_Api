@@ -22,8 +22,8 @@ export const userService = {
       !body.password ||
       !body.phone ||
       !body.dateOfBirth ||
-      body.isFemale === undefined
-     || !body.address
+      body.isFemale === undefined ||
+      !body.address
     ) {
       res.json({
         acknowledgement: false,
@@ -120,6 +120,39 @@ export const userService = {
       data: token,
     });
   },
+  getForgotOTP: async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+    console.log("Email:", email);
+    if (!email) {
+      res.json({
+        acknowledgement: false,
+        message: "Error",
+        description: "Email is required",
+      });
+      return;
+    }
+    if (await User.findOne({ email: email })) {
+      console.log("Email already exists");
+      const otp = Math.floor(1000 + Math.random() * 9000);
+      const token = verifyEmailToken(email, otp.toString());
+
+      await sendEmail(otp.toString(), email);
+      res.json({
+        acknowledgement: true,
+        message: "Success",
+        description: "OTP sent successfully",
+        data: token,
+      });
+      return;
+    }
+
+    res.json({
+      acknowledgement: false,
+      message: "Error",
+      description: "Email doesn't exists",
+    });
+    return;
+  },
   verifyOTP: async (req: Request, res: Response): Promise<void> => {
     const { token, email, otp } = req.body;
     const decoded = decodeEmailToken(token);
@@ -137,6 +170,32 @@ export const userService = {
         acknowledgement: false,
         message: "Error",
         description: "Invalid email",
+      });
+      return;
+    }
+    if (decoded.otp !== otp) {
+      res.json({
+        acknowledgement: false,
+        message: "Error",
+        description: "Invalid OTP",
+      });
+      return;
+    }
+    res.json({
+      acknowledgement: true,
+      message: "Success",
+      description: "OTP verified successfully",
+    });
+  },
+  verifyForgotOTP: async (req: Request, res: Response): Promise<void> => {
+    const { token, otp } = req.body;
+    const decoded = decodeEmailToken(token);
+
+    if (!decoded) {
+      res.json({
+        acknowledgement: false,
+        message: "Error",
+        description: "Invalid token",
       });
       return;
     }
@@ -203,14 +262,15 @@ export const userService = {
   // Patient
   createPatient: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { email, password, name, gender, dateOfBirth, phone, address } = req.body;
+      const { email, password, name, gender, dateOfBirth, phone, address } =
+        req.body;
       const avatar = req.file
-          ? {
+        ? {
             url: req.file.path,
             fileName: req.file.filename,
             fileType: req.file.mimetype,
           }
-          : undefined;
+        : undefined;
 
       if (!email || !password || !name) {
         return res.json({
@@ -248,13 +308,16 @@ export const userService = {
       return res.json({
         acknowledgement: false,
         message: "Error creating patient",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
       });
     }
   },
   getAllPatients: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const patients = await User.find({ role: "patient" }).sort({ createdAt: -1 });
+      const patients = await User.find({ role: "patient" }).sort({
+        createdAt: -1,
+      });
       return res.json({
         acknowledgement: true,
         message: "Patients fetched successfully",
@@ -264,7 +327,8 @@ export const userService = {
       return res.json({
         acknowledgement: false,
         message: "Error fetching patients",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
       });
     }
   },
@@ -287,7 +351,8 @@ export const userService = {
       return res.json({
         acknowledgement: false,
         message: "Error fetching patient",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
       });
     }
   },
@@ -306,9 +371,9 @@ export const userService = {
       }
 
       const updatedPatient = await User.findOneAndUpdate(
-          { _id: id, role: "patient" },
-          { ...updates, updatedAt: new Date() },
-          { new: true, runValidators: true }
+        { _id: id, role: "patient" },
+        { ...updates, updatedAt: new Date() },
+        { new: true, runValidators: true }
       );
 
       if (!updatedPatient) {
@@ -327,7 +392,8 @@ export const userService = {
       return res.json({
         acknowledgement: false,
         message: "Error updating patient",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
       });
     }
   },
@@ -337,12 +403,12 @@ export const userService = {
     try {
       const { email, password, name, gender, phone, address } = req.body;
       const avatar = req.file
-          ? {
+        ? {
             url: req.file.path,
             fileName: req.file.filename,
             fileType: req.file.mimetype,
           }
-          : undefined;
+        : undefined;
 
       if (!email || !password || !name) {
         return res.json({
@@ -379,13 +445,16 @@ export const userService = {
       return res.json({
         acknowledgement: false,
         message: "Error creating doctor",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
       });
     }
   },
   getAllDoctors: async (req: Request, res: Response): Promise<Response> => {
     try {
-      const doctors = await User.find({ role: "doctor" }).sort({ createdAt: -1 });
+      const doctors = await User.find({ role: "doctor" }).sort({
+        createdAt: -1,
+      });
       return res.json({
         acknowledgement: true,
         message: "Doctors fetched successfully",
@@ -395,7 +464,8 @@ export const userService = {
       return res.json({
         acknowledgement: false,
         message: "Error fetching doctors",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
       });
     }
   },
@@ -418,7 +488,8 @@ export const userService = {
       return res.json({
         acknowledgement: false,
         message: "Error fetching doctor",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
       });
     }
   },
@@ -437,9 +508,9 @@ export const userService = {
       }
 
       const updatedDoctor = await User.findOneAndUpdate(
-          { _id: id, role: "doctor" },
-          { ...updates, updatedAt: new Date() },
-          { new: true, runValidators: true }
+        { _id: id, role: "doctor" },
+        { ...updates, updatedAt: new Date() },
+        { new: true, runValidators: true }
       );
 
       if (!updatedDoctor) {
@@ -458,7 +529,8 @@ export const userService = {
       return res.json({
         acknowledgement: false,
         message: "Error updating doctor",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
       });
     }
   },
@@ -474,26 +546,30 @@ export const userService = {
     const exitsUser = await User.findById(_id);
 
     const avatar = req.file
-    ? {
-      url: req.file.path,
-      fileName: req.file.filename,
-      fileType: req.file.mimetype,
-    }
-    : undefined;
+      ? {
+          url: req.file.path,
+          fileName: req.file.filename,
+          fileType: req.file.mimetype,
+        }
+      : undefined;
 
     if (req.file) {
-      await remove(exitsUser!.avatar?.url as string);
+      await remove(exitsUser!.avatar?.fileName as string);
     }
 
     user.avatar = avatar;
 
-    await User.findByIdAndUpdate(exitsUser?._id, {$set: user}, {runValidators: true});
+    await User.findByIdAndUpdate(
+      exitsUser?._id,
+      { $set: user },
+      { runValidators: true }
+    );
     res.json({
-        acknowledgement: true,
-        message: "OK",
-        description: `${exitsUser?.name}'s information updated successfully`,
+      acknowledgement: true,
+      message: "OK",
+      description: `${exitsUser?.name}'s information updated successfully`,
     });
-},
+  },
   // forgotPassword: async (req: Request, res: Response): Promise<void> => {
   //     const user = await User.findOne({email: req.body.email});
   //     if (!user) {
@@ -514,36 +590,68 @@ export const userService = {
   //     return;
   // },
   resetPassword: async (req: Request, res: Response): Promise<void> => {
-      const token = req.headers.authorization?.split(" ")[1];
-      const _id = verifyandget_id(token as string);
-      const user = await User.findById(_id);
-      // console.log("Req body:", req.body.currentPassword);
-      // console.log("User:", user);
-      if (user?.comparePassword(req.body.currentPassword, user.password)) {
-          const hashpassword = await user?.encryptedPassword(req.body.newPassword);
-          await User.findByIdAndUpdate(
-              _id,
-              {
-                  password: hashpassword,
-              },
-              {
-                  runValidators: false,
-                  returnOriginal: false,
-              }
-          );
-          res.json({
-              acknowledgement: true,
-              message: "Success",
-              description: "Password updated successfully",
-          });
-      } else {
-          res.json({
-              acknowledgement: false,
-              message: "Error",
-              description: "Invalid password",
-          });
-          return;
-      }
+    const token = req.headers.authorization?.split(" ")[1];
+    const _id = verifyandget_id(token as string);
+    const user = await User.findById(_id);
+    // console.log("Req body:", req.body.currentPassword);
+    // console.log("User:", user);
+    if (user?.comparePassword(req.body.currentPassword, user.password)) {
+      const hashpassword = await user?.encryptedPassword(req.body.newPassword);
+      await User.findByIdAndUpdate(
+        _id,
+        {
+          password: hashpassword,
+        },
+        {
+          runValidators: false,
+          returnOriginal: false,
+        }
+      );
+      res.json({
+        acknowledgement: true,
+        message: "Success",
+        description: "Password updated successfully",
+      });
+    } else {
+      res.json({
+        acknowledgement: false,
+        message: "Error",
+        description: "Invalid password",
+      });
+      return;
+    }
+  },
+  changePassword: async (req: Request, res: Response): Promise<void> => {
+    const { token, password } = req.body;
+
+    try {
+      const email = decodeEmailToken(token as string);
+      const user = await User.findOne({ email: email?.email });
+      const hashpassword = await user?.encryptedPassword(password);
+      await User.findByIdAndUpdate(
+        user?._id,
+        {
+          password: hashpassword,
+        },
+        {
+          runValidators: false,
+          returnOriginal: false,
+        }
+      );
+      res.json({
+        acknowledgement: true,
+        message: "Success",
+        description: "Password updated successfully",
+      });
+      return;
+    } catch (error) {
+      res.json({
+        acknowledgement: false,
+        message: "Error",
+        description: "Invalid token or token expired",
+      });
+      return;
+    }
   },
   // updateInfo: async (req: Request, res: Response): Promise<void> => {
   //     const token = req.headers.authorization?.split(" ")[1];

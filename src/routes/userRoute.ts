@@ -17,7 +17,9 @@ const userRouter = express.Router();
 // userRouter.post('/sign-up', upload.single("avatar"), userController.signUp);
 userRouter.post('/sign-up', userController.signUp);
 userRouter.post('/getOTP', userController.getOTP);
+userRouter.post('/getForgotOTP', userController.getForgotOTP);
 userRouter.post('/verifyOTP', userController.verifyOTP);
+userRouter.post('/verifyForgotOTP', userController.verifyForgotOTP);
 
 userRouter.post('/sign-in', userController.signIn);
 userRouter.get('/me',verify, userController.persistLogin);
@@ -36,6 +38,7 @@ userRouter.patch("/doctor/:id", upload.single("avatar"), userController.updateDo
 
 // userRouter.patch('/forgot-password', userController.forgotPassword);
 userRouter.post('/reset-password', userController.resetPassword);
+userRouter.post('/change-password', userController.changePassword);
 // userRouter.patch('/change-password-token', userController.resetPasswordToken);
 userRouter.post('/update-profile', verify, upload.single("avatar"),userController.updateInfo);
 // userRouter.post('/send-reset-email', userController.sendResetEmail);
