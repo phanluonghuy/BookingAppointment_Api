@@ -621,8 +621,6 @@ export const userService = {
       var workScheduleDetails = undefined
       if (workSchedule) {
         workScheduleDetails = getAvailableWorkHours(workSchedule)
-        console.log(workSchedule)
-        console.log(workScheduleDetails)
       }
 
       const fullInfo = {
