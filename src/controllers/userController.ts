@@ -126,6 +126,15 @@ export const userController = {
             console.log(`Route: ${req.url} || Method: ${req.method}`);
         }
     },
+    getDoctorsInfo: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.getDoctorsInfo(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
     getDoctorById: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             await userService.getDoctorById(req, res);
