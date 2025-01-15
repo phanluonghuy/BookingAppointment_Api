@@ -20,9 +20,27 @@ export const userController = {
             console.log(`Route: ${req.url} || Method: ${req.method}`);
         }
     },
+    getForgotOTP: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.getForgotOTP(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
     verifyOTP: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             await userService.verifyOTP(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+    verifyForgotOTP: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.verifyForgotOTP(req, res);
         } catch (error) {
             next(error);
         } finally {
@@ -160,6 +178,15 @@ export const userController = {
     resetPassword: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             await userService.resetPassword(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+    changePassword: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await userService.changePassword(req, res);
         } catch (error) {
             next(error);
         } finally {
