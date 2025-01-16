@@ -538,11 +538,14 @@ export const userService = {
       });
     }
   },
-  getDoctorsBySpecialization: async (req: Request, res: Response): Promise<Response> => {
+  getDoctorsBySpecialization: async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
     try {
       const { specialization } = req.query;
 
-      if (!specialization || typeof specialization !== 'string') {
+      if (!specialization || typeof specialization !== "string") {
         return res.json({
           acknowledgement: false,
           message: "Error",
@@ -580,7 +583,9 @@ export const userService = {
         });
       }
 
-      const doctorIds = specializations.map(specialization => specialization.doctorId);
+      const doctorIds = specializations.map(
+        (specialization) => specialization.doctorId
+      );
 
       const doctors = await User.find({
         _id: { $in: doctorIds },
@@ -597,12 +602,16 @@ export const userService = {
       return res.json({
         acknowledgement: false,
         message: "Error fetching doctors",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
       });
     }
   },
 
-  getDoctorByIdWithFullInfo: async (req: Request, res: Response): Promise<Response> => {
+  getDoctorByIdWithFullInfo: async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
     try {
       const { id } = req.params;
       const doctor = await User.findOne({ _id: id, role: "doctor" });
@@ -613,15 +622,19 @@ export const userService = {
         });
       }
 
-      const specializations = await Specialization.findOne({ doctorId: id }) || undefined;
-      const workSchedule = await WorkSchedule.findOne({ doctorId: id }) || undefined;
-      const review = await Review.findOne({ doctorId:id }).populate("ratings") || undefined;
+      const specializations =
+        (await Specialization.findOne({ doctorId: id })) || undefined;
+      const workSchedule =
+        (await WorkSchedule.findOne({ doctorId: id })) || undefined;
+      const review =
+        (await Review.findOne({ doctorId: id }).populate("ratings")) ||
+        undefined;
 
       const fullInfo = {
         doctor,
         specializations,
         workSchedule,
-        review
+        review,
       };
 
       return res.json({
@@ -633,12 +646,71 @@ export const userService = {
       return res.json({
         acknowledgement: false,
         message: "Error fetching doctor",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
       });
     }
   },
+  getDoctorsInfo: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const users = await User.aggregate([
+        {
+          // Match users with the role of 'doctor'
+          $match: { role: "doctor" },
+        },
+        {
+          // Lookup reviews for each doctor
+          $lookup: {
+            from: "reviews",
+            localField: "_id",
+            foreignField: "doctorId",
+            as: "reviews",
+          },
+        },
+        {
+          // Add fields for total reviews and average rating
+          $addFields: {
+            totalReviews: { $size: "$reviews" },
+            averageRating: { $avg: "$reviews.averageRating" },
+          },
+        },
+        {
+          // Lookup specializations (assuming a separate collection exists)
+          $lookup: {
+            from: "specializations",
+            localField: "_id",
+            foreignField: "doctorId",
+            as: "specializations",
+          },
+        },
+        {
+          // Project the required fields
+          $project: {
+            name: 1,
+            email: 1,
+            phone: 1,
+            avatar: 1,
+            averageRating: 1,
+            totalReviews: 1,
+            specializations: 1,
+          },
+        },
+      ]);
 
-
+      return res.json({
+        acknowledgement: true,
+        message: "Doctor fetched successfully",
+        data: users,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error fetching doctor",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
 
   updateInfo: async (req: Request, res: Response): Promise<void> => {
     const token = req.headers.authorization?.split(" ")[1];
