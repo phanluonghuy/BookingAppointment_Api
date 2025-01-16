@@ -4,8 +4,9 @@ interface IWorkSchedule extends Document {
     doctorId: mongoose.Types.ObjectId;
     availableTimes: {
         dayOfWeek: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
-        startTime: string; // In HH:mm format
-        endTime: string;   // In HH:mm format
+        startTime: string;
+        endTime: string;
+        restTime: string[];
     }[];
     createdAt: Date;
     updatedAt: Date;
@@ -39,6 +40,15 @@ const WorkScheduleSchema: Schema<IWorkSchedule> = new Schema<IWorkSchedule>(
                     validate: {
                         validator: (value: string) => /^([01]?\d|2[0-3]):[0-5]\d$/.test(value),
                         message: "End time must be in HH:mm format",
+                    },
+                },
+                restTime: {
+                    type: [String],
+                    required: true,
+                    validate: {
+                        validator: (values: string[]) =>
+                            values.every((value) => /^([01]?\d|2[0-3]):[0-5]\d$/.test(value)),
+                        message: "Each rest time must be in HH:mm format",
                     },
                 },
             },

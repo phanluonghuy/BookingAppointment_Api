@@ -1,5 +1,26 @@
 import { Request, Response } from "express";
+import redisUtil from "../utils/redisUtil";
 import Appointment from "../models/appointmentModel";
+
+const getTotalServeKey = (doctorId: string) => `appointments:today:${doctorId}:totalServe`;
+const getCompletedKey = (doctorId: string) => `appointments:today:${doctorId}:completed`;
+
+const updateRedisForTodayAppointments = async (doctorId: string): Promise<void> => {
+    const dateStr = new Date().toISOString().split("T")[0];
+    const dateStartUTC = new Date(`${dateStr}T00:00:00Z`);
+    const dateEndUTC = new Date(`${dateStr}T23:59:59.999Z`);
+
+    const appointments = await Appointment.find({
+        doctorId: doctorId,
+        appointmentDate: { $gte: dateStartUTC, $lte: dateEndUTC },
+    });
+
+    const totalServe = appointments.filter(a => a.status !== "pending").length;
+    const completed = appointments.filter(a => ["completed", "cancelled"].includes(a.status)).length;
+
+    await redisUtil.setToRedis(getTotalServeKey(doctorId), totalServe.toString());
+    await redisUtil.setToRedis(getCompletedKey(doctorId), completed.toString());
+}
 
 export const appointmentService = {
     // Create a new appointment
@@ -14,19 +35,19 @@ export const appointmentService = {
                 });
             }
 
-            // Calculate the queue number for the appointment on the same day
-            const dateStart = new Date(appointmentDate);
-            dateStart.setHours(0, 0, 0, 0); // Start of the day
-            const dateEnd = new Date(appointmentDate);
-            dateEnd.setHours(23, 59, 59, 999); // End of the day
+            const dateStr = new Date(appointmentDate).toISOString().split("T")[0];
 
-            // Find appointments for the same doctor and date
+            const dateStartUTC = new Date(`${dateStr}T00:00:00Z`);
+            const dateEndUTC = new Date(`${dateStr}T23:59:59.999Z`);
+
+            console.log(dateStartUTC);
+            console.log(dateEndUTC);
+
             const existingAppointments = await Appointment.find({
                 doctorId,
-                appointmentDate: { $gte: dateStart, $lte: dateEnd },
+                appointmentDate: { $gte: dateStartUTC, $lte: dateEndUTC },
             });
 
-            // Determine the queue number (based on existing appointments)
             const queueNumber = existingAppointments.length + 1;
 
             const appointment = new Appointment({
@@ -227,10 +248,18 @@ export const appointmentService = {
                 });
             }
 
+            const originalStatus = appointment.status;
+            const doctorId = appointment.doctorId.toString();
             appointment.status = status;
             appointment.updatedAt = new Date();
-
             await appointment.save();
+
+            const today = new Date().toISOString().split("T")[0];
+            const appointmentDate = new Date(appointment.appointmentDate).toISOString().split("T")[0];
+
+            if (appointmentDate === today && originalStatus !== status) {
+                await updateRedisForTodayAppointments(doctorId);
+            }
 
             return res.json({
                 acknowledgement: true,
@@ -313,4 +342,43 @@ export const appointmentService = {
             });
         }
     },
+
+    getTodayAppointmentStats: async (req: Request, res: Response): Promise<Response> => {
+        const { doctorId } = req.params;
+
+        try {
+            const totalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
+            const completed = await redisUtil.getFromRedis(getCompletedKey(doctorId));
+
+            if (totalServe && completed) {
+                return res.json({
+                    acknowledgement: true,
+                    data: {
+                        totalServe: Number(totalServe),
+                        completed: Number(completed),
+                    },
+                });
+            }
+
+            await updateRedisForTodayAppointments(doctorId);
+
+            const newTotalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
+            const newCompleted = await redisUtil.getFromRedis(getCompletedKey(doctorId));
+
+            return res.json({
+                acknowledgement: true,
+                data: {
+                    totalServe: Number(newTotalServe),
+                    completed: Number(newCompleted),
+                },
+            });
+        } catch (error) {
+            return res.json({
+                acknowledgement: false,
+                message: "Error",
+                description: error instanceof Error ? error.message : "An unknown error occurred",
+            });
+        }
+    },
+
 };

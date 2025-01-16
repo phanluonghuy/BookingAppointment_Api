@@ -100,4 +100,15 @@ export const appointmentController = {
             console.log(`Route: ${req.url} || Method: ${req.method}`);
         }
     },
+
+    // Today Appointment Stats
+    getTodayAppointmentStats: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await appointmentService.getTodayAppointmentStats(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
 };

@@ -12,5 +12,6 @@ appointmentRouter.get("/patient/:patientId/date/:date", appointmentController.ge
 appointmentRouter.patch("/:id/status", appointmentController.updateAppointmentStatus);
 appointmentRouter.patch("/:id/priority", appointmentController.updateAppointmentPriority);
 appointmentRouter.delete("/:id", appointmentController.deleteAppointment);
+appointmentRouter.get("/doctor/:doctorId/today-stats", appointmentController.getTodayAppointmentStats);
 
 export default appointmentRouter;
