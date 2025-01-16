@@ -38,6 +38,7 @@ userRouter.patch("/doctor/:id", upload.single("avatar"), userController.updateDo
 
 userRouter.get("/doctor", userController.getDoctorsBySpecialization);
 userRouter.get("/doctor/:id/full-info", userController.getDoctorByIdWithFullInfo);
+userRouter.get("/doctorsInfo", userController.getDoctorsInfo);
 
 
 // userRouter.patch("/forgot-password", userController.forgotPassword);
