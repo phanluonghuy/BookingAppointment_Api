@@ -618,15 +618,15 @@ export const userService = {
       const workSchedule = await WorkSchedule.findOne({ doctorId: id }) || undefined;
       const review = await Review.findOne({ doctorId:id }).populate("ratings") || undefined;
 
-      var workScheduleDetails = undefined
-      if (workSchedule) {
-        workScheduleDetails = getAvailableWorkHours(workSchedule)
-      }
+      // var workScheduleDetails = undefined
+      // if (workSchedule) {
+      //   workScheduleDetails = getAvailableWorkHours(workSchedule)
+      // }
 
       const fullInfo = {
         doctor,
         specializations,
-        workScheduleDetails,
+        workSchedule,
         review
       };
 

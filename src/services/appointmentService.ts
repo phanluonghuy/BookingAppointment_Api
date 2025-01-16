@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import redisUtil from "../utils/redisUtil";
+// import redisUtil from "../utils/redisUtil";
 import Appointment from "../models/appointmentModel";
 
-const getTotalServeKey = (doctorId: string) => `appointments:today:${doctorId}:totalServe`;
-const getCompletedKey = (doctorId: string) => `appointments:today:${doctorId}:completed`;
+// const getTotalServeKey = (doctorId: string) => `appointments:today:${doctorId}:totalServe`;
+// const getCompletedKey = (doctorId: string) => `appointments:today:${doctorId}:completed`;
 
-const updateRedisForTodayAppointments = async (doctorId: string): Promise<void> => {
+const updateRedisForTodayAppointments = async (doctorId: string): Promise<any> => {
     const dateStr = new Date().toISOString().split("T")[0];
     const dateStartUTC = new Date(`${dateStr}T00:00:00Z`);
     const dateEndUTC = new Date(`${dateStr}T23:59:59.999Z`);
@@ -18,8 +18,13 @@ const updateRedisForTodayAppointments = async (doctorId: string): Promise<void> 
     const totalServe = appointments.filter(a => a.status !== "pending").length;
     const completed = appointments.filter(a => ["completed", "cancelled"].includes(a.status)).length;
 
-    await redisUtil.setToRedis(getTotalServeKey(doctorId), totalServe.toString());
-    await redisUtil.setToRedis(getCompletedKey(doctorId), completed.toString());
+    // await redisUtil.setToRedis(getTotalServeKey(doctorId), totalServe.toString());
+    // await redisUtil.setToRedis(getCompletedKey(doctorId), completed.toString());
+
+    return {
+        totalServe: totalServe,
+        completed: completed,
+    };
 }
 
 export const appointmentService = {
@@ -347,30 +352,24 @@ export const appointmentService = {
         const { doctorId } = req.params;
 
         try {
-            const totalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
-            const completed = await redisUtil.getFromRedis(getCompletedKey(doctorId));
+            // const totalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
+            // const completed = await redisUtil.getFromRedis(getCompletedKey(doctorId));
 
-            if (totalServe && completed) {
-                return res.json({
-                    acknowledgement: true,
-                    data: {
-                        totalServe: Number(totalServe),
-                        completed: Number(completed),
-                    },
-                });
-            }
+            // if (totalServe && completed) {
+            //     return res.json({
+            //         acknowledgement: true,
+            //         data: updateRedisForTodayAppointments(doctorId),
+            //     });
+            // }
 
-            await updateRedisForTodayAppointments(doctorId);
+            const stats = await updateRedisForTodayAppointments(doctorId);
 
-            const newTotalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
-            const newCompleted = await redisUtil.getFromRedis(getCompletedKey(doctorId));
+            // const newTotalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
+            // const newCompleted = await redisUtil.getFromRedis(getCompletedKey(doctorId));
 
             return res.json({
                 acknowledgement: true,
-                data: {
-                    totalServe: Number(newTotalServe),
-                    completed: Number(newCompleted),
-                },
+                data: stats,
             });
         } catch (error) {
             return res.json({
