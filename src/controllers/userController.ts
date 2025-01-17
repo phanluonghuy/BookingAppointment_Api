@@ -8,7 +8,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     getOTP: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -17,7 +17,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     getForgotOTP: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -26,7 +26,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     verifyOTP: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -35,7 +35,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     verifyForgotOTP: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -44,7 +44,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     persistLogin: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -56,7 +56,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     signIn: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -65,7 +65,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
 
@@ -76,7 +76,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     getAllPatients: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -85,7 +85,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     getPatientById: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -94,7 +94,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     updatePatient: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -103,7 +103,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
 
@@ -114,7 +114,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     getAllDoctors: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -123,7 +123,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     getDoctorsInfo: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -132,7 +132,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     getDoctorById: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -141,7 +141,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     updateDoctor: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -150,7 +150,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
 
@@ -160,7 +160,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
 
@@ -170,7 +170,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
 
@@ -181,7 +181,7 @@ export const userController = {
     //     } catch (error) {
     //         next(error);
     //     } finally {
-    //         console.log(`Route: ${req.path} || Method: ${req.method}`);
+    //         console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
     //     }
     // },
     resetPassword: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -190,7 +190,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     changePassword: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -199,7 +199,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     updateInfo: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -208,7 +208,7 @@ export const userController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.path} || Method: ${req.method}`);
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
     // sendResetEmail: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -217,7 +217,7 @@ export const userController = {
     //     } catch (error) {
     //         next(error);
     //     } finally {
-    //         console.log(`Route: ${req.path} || Method: ${req.method}`);
+    //         console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
     //     }
     // },
     // resetPasswordEmail: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -226,7 +226,7 @@ export const userController = {
     //     } catch (error) {
     //         next(error);
     //     } finally {
-    //         console.log(`Route: ${req.path} || Method: ${req.method}`);
+    //         console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
     //     }
     // },
     // resetPasswordToken: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -235,7 +235,7 @@ export const userController = {
     //     } catch (error) {
     //         next(error);
     //     } finally {
-    //         console.log(`Route: ${req.path} || Method: ${req.method}`);
+    //         console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
     //     }
     // },
     // getAllUser: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -244,7 +244,7 @@ export const userController = {
     //     } catch (error) {
     //         next(error);
     //     } finally {
-    //         console.log(`Route: ${req.path} || Method: ${req.method}`);
+    //         console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
     //     }
     // },
     // getUserById: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -253,7 +253,7 @@ export const userController = {
     //     } catch (error) {
     //         next(error);
     //     } finally {
-    //         console.log(`Route: ${req.path} || Method: ${req.method}`);
+    //         console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
     //     }
     // },
     // updateUser: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -262,7 +262,7 @@ export const userController = {
     //     } catch (error) {
     //         next(error);
     //     } finally {
-    //         console.log(`Route: ${req.path} || Method: ${req.method}`);
+    //         console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
     //     }
     // },
     // deleteUser: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -271,7 +271,7 @@ export const userController = {
     //     } catch (error) {
     //         next(error);
     //     } finally {
-    //         console.log(`Route: ${req.path} || Method: ${req.method}`);
+    //         console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
     //     }
     // },
     // redeemLoyaltyPoints: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -280,7 +280,7 @@ export const userController = {
     //     } catch (error) {
     //         next(error);
     //     } finally {
-    //         console.log(`Route: ${req.path} || Method: ${req.method}`);
+    //         console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
     //     }
     // }
 }
