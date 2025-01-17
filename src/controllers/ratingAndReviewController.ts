@@ -8,7 +8,7 @@ export const ratingAndReviewController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.url} || Method: ${req.method}`);
+            console.log(`Route: ${req.path} || Method: ${req.method}`);
         }
     },
 
@@ -18,7 +18,7 @@ export const ratingAndReviewController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.url} || Method: ${req.method}`);
+            console.log(`Route: ${req.path} || Method: ${req.method}`);
         }
     },
 
@@ -28,7 +28,7 @@ export const ratingAndReviewController = {
         } catch (error) {
             next(error);
         } finally {
-            console.log(`Route: ${req.url} || Method: ${req.method}`);
+            console.log(`Route: ${req.path} || Method: ${req.method}`);
         }
     },
 };
