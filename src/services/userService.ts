@@ -127,7 +127,7 @@ export const userService = {
   },
   getForgotOTP: async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
-    console.log("Email:", email);
+    // console.log("Email:", email);
     if (!email) {
       res.json({
         acknowledgement: false,
@@ -137,7 +137,7 @@ export const userService = {
       return;
     }
     if (await User.findOne({ email: email })) {
-      console.log("Email already exists");
+      // console.log("Email already exists");
       const otp = Math.floor(1000 + Math.random() * 9000);
       const token = verifyEmailToken(email, otp.toString());
 
@@ -631,16 +631,11 @@ export const userService = {
         (await Review.findOne({ doctorId: id }).populate("ratings")) ||
         undefined;
 
-      var workScheduleDetails = undefined
-      if (workSchedule) {
-        workScheduleDetails = getAvailableWorkHours(workSchedule)
-      }
-
       const fullInfo = {
         doctor,
         specializations,
-        workScheduleDetails,
-        review
+        workSchedule,
+        review,
       };
 
       return res.json({

@@ -71,7 +71,7 @@ export const appointmentController = {
     // Update appointment status
     updateAppointmentStatus: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            await appointmentService.updateAppointmentStatus(req, res);
+            // await appointmentService.updateAppointmentStatus(req, res);
         } catch (error) {
             next(error);
         } finally {
@@ -104,7 +104,7 @@ export const appointmentController = {
     // Today Appointment Stats
     getTodayAppointmentStats: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            await appointmentService.getTodayAppointmentStats(req, res);
+            // await appointmentService.getTodayAppointmentStats(req, res);
         } catch (error) {
             next(error);
         } finally {

@@ -6,8 +6,8 @@ export const paymentService = {
     // Create a new payment
     createPayment: async (req: Request, res: Response): Promise<Response> => {
         try {
+            const { patientId } = req.body;
             const {
-                patientId,
                 appointmentId,
                 amount,
                 advanceAmount,
@@ -16,7 +16,7 @@ export const paymentService = {
                 transactionId,
             } = req.body;
 
-            if (!patientId || !appointmentId || !amount || !advanceAmount || !paymentMethod || !transactionId) {
+            if (!appointmentId || !amount || !advanceAmount || !paymentMethod || !transactionId) {
                 return res.json({
                     acknowledgement: false,
                     message: "All required fields must be provided",

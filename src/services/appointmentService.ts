@@ -1,34 +1,38 @@
 import { Request, Response } from "express";
-import redisUtil from "../utils/redisUtil";
+// import redisUtil from "../utils/redisUtil";
 import Appointment from "../models/appointmentModel";
+import { verifyandget_id } from "../utils/tokenUtil";
 
 const getTotalServeKey = (doctorId: string) => `appointments:today:${doctorId}:totalServe`;
 const getCompletedKey = (doctorId: string) => `appointments:today:${doctorId}:completed`;
 
-const updateRedisForTodayAppointments = async (doctorId: string): Promise<void> => {
-    const dateStr = new Date().toISOString().split("T")[0];
-    const dateStartUTC = new Date(`${dateStr}T00:00:00Z`);
-    const dateEndUTC = new Date(`${dateStr}T23:59:59.999Z`);
+// const updateRedisForTodayAppointments = async (doctorId: string): Promise<void> => {
+//     const dateStr = new Date().toISOString().split("T")[0];
+//     const dateStartUTC = new Date(`${dateStr}T00:00:00Z`);
+//     const dateEndUTC = new Date(`${dateStr}T23:59:59.999Z`);
 
-    const appointments = await Appointment.find({
-        doctorId: doctorId,
-        appointmentDate: { $gte: dateStartUTC, $lte: dateEndUTC },
-    });
+//     const appointments = await Appointment.find({
+//         doctorId: doctorId,
+//         appointmentDate: { $gte: dateStartUTC, $lte: dateEndUTC },
+//     });
 
-    const totalServe = appointments.filter(a => a.status !== "pending").length;
-    const completed = appointments.filter(a => ["completed", "cancelled"].includes(a.status)).length;
+//     const totalServe = appointments.filter(a => a.status !== "pending").length;
+//     const completed = appointments.filter(a => ["completed", "cancelled"].includes(a.status)).length;
 
-    await redisUtil.setToRedis(getTotalServeKey(doctorId), totalServe.toString());
-    await redisUtil.setToRedis(getCompletedKey(doctorId), completed.toString());
-}
+//     await redisUtil.setToRedis(getTotalServeKey(doctorId), totalServe.toString());
+//     await redisUtil.setToRedis(getCompletedKey(doctorId), completed.toString());
+// }
 
 export const appointmentService = {
     // Create a new appointment
     createAppointment: async (req: Request, res: Response): Promise<Response> => {
         try {
-            const { patientId, doctorId, appointmentDate, symptoms, notes} = req.body;
+            const token = req.headers.authorization?.split(" ")[1];
+    const patientId = verifyandget_id(token as string);
+            
+            const  {doctorId, appointmentDate, symptoms, notes} = req.body;
 
-            if (!patientId || !doctorId || !appointmentDate || !symptoms) {
+            if (!doctorId || !appointmentDate || !symptoms) {
                 return res.json({
                     acknowledgement: false,
                     message: "Patient ID, Doctor ID, Appointment Date, and Symptoms are required",
@@ -134,7 +138,39 @@ export const appointmentService = {
         try {
             const { patientId } = req.params;
 
-            const appointments = await Appointment.find({ patientId });
+            // const appointments = await Appointment.find({ patientId });
+            const appointments = await Appointment.aggregate([
+                {
+                  $lookup: {
+                    from: 'users',
+                    localField: 'doctorId',
+                    foreignField: '_id',
+                    as: 'doctorDetails',
+                  },
+                },
+                {
+                  $unwind: '$doctorDetails',
+                },
+                {
+                  $project: {
+                    symptoms: 1,
+                    createdAt: 1,
+                    patientId: 1,
+                    doctorId: 1,
+                    __v: 1,
+                    queueNumber: 1,
+                    _id: 1,
+                    priority: 1,
+                    appointmentDate: 1,
+                    status: 1,
+                    updatedAt: 1,
+                    doctorName: '$doctorDetails.name', // Project doctor name as a top-level field
+                    doctorAvatarUrl: '$doctorDetails.avatar.url', // Project doctor avatar URL as a top-level field
+                  },
+                },
+              ]);
+              
+              
 
             if (!appointments || appointments.length === 0) {
                 return res.json({
@@ -227,53 +263,53 @@ export const appointmentService = {
     },
 
     // Update appointment status
-    updateAppointmentStatus: async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const { id } = req.params;
-            const { status } = req.body;
+    // updateAppointmentStatus: async (req: Request, res: Response): Promise<Response> => {
+    //     try {
+    //         const { id } = req.params;
+    //         const { status } = req.body;
 
-            if (!status || !["pending", "confirmed", "completed", "cancelled"].includes(status)) {
-                return res.json({
-                    acknowledgement: false,
-                    message: "Status is required and must be one of 'pending', 'confirmed', 'completed', or 'cancelled'",
-                });
-            }
+    //         if (!status || !["pending", "confirmed", "completed", "cancelled"].includes(status)) {
+    //             return res.json({
+    //                 acknowledgement: false,
+    //                 message: "Status is required and must be one of 'pending', 'confirmed', 'completed', or 'cancelled'",
+    //             });
+    //         }
 
-            const appointment = await Appointment.findById(id);
+    //         const appointment = await Appointment.findById(id);
 
-            if (!appointment) {
-                return res.json({
-                    acknowledgement: false,
-                    message: "Appointment not found",
-                });
-            }
+    //         if (!appointment) {
+    //             return res.json({
+    //                 acknowledgement: false,
+    //                 message: "Appointment not found",
+    //             });
+    //         }
 
-            const originalStatus = appointment.status;
-            const doctorId = appointment.doctorId.toString();
-            appointment.status = status;
-            appointment.updatedAt = new Date();
-            await appointment.save();
+    //         const originalStatus = appointment.status;
+    //         const doctorId = appointment.doctorId.toString();
+    //         appointment.status = status;
+    //         appointment.updatedAt = new Date();
+    //         await appointment.save();
 
-            const today = new Date().toISOString().split("T")[0];
-            const appointmentDate = new Date(appointment.appointmentDate).toISOString().split("T")[0];
+    //         const today = new Date().toISOString().split("T")[0];
+    //         const appointmentDate = new Date(appointment.appointmentDate).toISOString().split("T")[0];
 
-            if (appointmentDate === today && originalStatus !== status) {
-                await updateRedisForTodayAppointments(doctorId);
-            }
+    //         if (appointmentDate === today && originalStatus !== status) {
+    //             await updateRedisForTodayAppointments(doctorId);
+    //         }
 
-            return res.json({
-                acknowledgement: true,
-                message: "Appointment status updated successfully",
-                data: appointment,
-            });
-        } catch (error) {
-            return res.json({
-                acknowledgement: false,
-                message: "Error",
-                description: error instanceof Error ? error.message : "An unknown error occurred",
-            });
-        }
-    },
+    //         return res.json({
+    //             acknowledgement: true,
+    //             message: "Appointment status updated successfully",
+    //             data: appointment,
+    //         });
+    //     } catch (error) {
+    //         return res.json({
+    //             acknowledgement: false,
+    //             message: "Error",
+    //             description: error instanceof Error ? error.message : "An unknown error occurred",
+    //         });
+    //     }
+    // },
 
     // Update appointment priority
     updateAppointmentPriority: async (req: Request, res: Response): Promise<Response> => {
@@ -343,42 +379,42 @@ export const appointmentService = {
         }
     },
 
-    getTodayAppointmentStats: async (req: Request, res: Response): Promise<Response> => {
-        const { doctorId } = req.params;
+    // getTodayAppointmentStats: async (req: Request, res: Response): Promise<Response> => {
+    //     const { doctorId } = req.params;
 
-        try {
-            const totalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
-            const completed = await redisUtil.getFromRedis(getCompletedKey(doctorId));
+    //     try {
+    //         const totalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
+    //         const completed = await redisUtil.getFromRedis(getCompletedKey(doctorId));
 
-            if (totalServe && completed) {
-                return res.json({
-                    acknowledgement: true,
-                    data: {
-                        totalServe: Number(totalServe),
-                        completed: Number(completed),
-                    },
-                });
-            }
+    //         if (totalServe && completed) {
+    //             return res.json({
+    //                 acknowledgement: true,
+    //                 data: {
+    //                     totalServe: Number(totalServe),
+    //                     completed: Number(completed),
+    //                 },
+    //             });
+    //         }
 
-            await updateRedisForTodayAppointments(doctorId);
+    //         await updateRedisForTodayAppointments(doctorId);
 
-            const newTotalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
-            const newCompleted = await redisUtil.getFromRedis(getCompletedKey(doctorId));
+    //         const newTotalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
+    //         const newCompleted = await redisUtil.getFromRedis(getCompletedKey(doctorId));
 
-            return res.json({
-                acknowledgement: true,
-                data: {
-                    totalServe: Number(newTotalServe),
-                    completed: Number(newCompleted),
-                },
-            });
-        } catch (error) {
-            return res.json({
-                acknowledgement: false,
-                message: "Error",
-                description: error instanceof Error ? error.message : "An unknown error occurred",
-            });
-        }
-    },
+    //         return res.json({
+    //             acknowledgement: true,
+    //             data: {
+    //                 totalServe: Number(newTotalServe),
+    //                 completed: Number(newCompleted),
+    //             },
+    //         });
+    //     } catch (error) {
+    //         return res.json({
+    //             acknowledgement: false,
+    //             message: "Error",
+    //             description: error instanceof Error ? error.message : "An unknown error occurred",
+    //         });
+    //     }
+    // },
 
 };
