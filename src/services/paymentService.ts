@@ -1,12 +1,15 @@
 import { Request, Response } from "express";
 import Payment from "../models/paymentModel";
 import Insurance from "../models/insuranceModel";
+import { verifyandget_id } from "../utils/tokenUtil";
+import Appointment from "../models/appointmentModel";
 
 export const paymentService = {
     // Create a new payment
     createPayment: async (req: Request, res: Response): Promise<Response> => {
         try {
-            const { patientId } = req.body;
+            const token = req.headers.authorization?.split(" ")[1];
+            const patientId = verifyandget_id(token as string);
             const {
                 appointmentId,
                 amount,
@@ -16,6 +19,8 @@ export const paymentService = {
                 transactionId,
             } = req.body;
 
+            console.log(appointmentId,amount,advanceAmount,paymentMethod,transactionId);
+            
             if (!appointmentId || !amount || !advanceAmount || !paymentMethod || !transactionId) {
                 return res.json({
                     acknowledgement: false,
@@ -80,6 +85,10 @@ export const paymentService = {
             });
 
             await payment.save();
+
+            if (paymentMethod !== "cash") {
+                await Appointment.findByIdAndUpdate(appointmentId, { status: "confirmed" });
+            }
 
             return res.json({
                 acknowledgement: true,

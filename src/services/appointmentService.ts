@@ -2,9 +2,12 @@ import { Request, Response } from "express";
 // import redisUtil from "../utils/redisUtil";
 import Appointment from "../models/appointmentModel";
 import { verifyandget_id } from "../utils/tokenUtil";
+import mongoose from "mongoose";
 
-const getTotalServeKey = (doctorId: string) => `appointments:today:${doctorId}:totalServe`;
-const getCompletedKey = (doctorId: string) => `appointments:today:${doctorId}:completed`;
+const getTotalServeKey = (doctorId: string) =>
+  `appointments:today:${doctorId}:totalServe`;
+const getCompletedKey = (doctorId: string) =>
+  `appointments:today:${doctorId}:completed`;
 
 // const updateRedisForTodayAppointments = async (doctorId: string): Promise<void> => {
 //     const dateStr = new Date().toISOString().split("T")[0];
@@ -24,397 +27,423 @@ const getCompletedKey = (doctorId: string) => `appointments:today:${doctorId}:co
 // }
 
 export const appointmentService = {
-    // Create a new appointment
-    createAppointment: async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const token = req.headers.authorization?.split(" ")[1];
-    const patientId = verifyandget_id(token as string);
-            
-            const  {doctorId, appointmentDate, symptoms, notes} = req.body;
+  // Create a new appointment
+  createAppointment: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const token = req.headers.authorization?.split(" ")[1];
+      const patientId = verifyandget_id(token as string);
 
-            if (!doctorId || !appointmentDate || !symptoms) {
-                return res.json({
-                    acknowledgement: false,
-                    message: "Patient ID, Doctor ID, Appointment Date, and Symptoms are required",
-                });
-            }
+      const { doctorId, appointmentDate, symptoms, notes } = req.body;
 
-            const dateStr = new Date(appointmentDate).toISOString().split("T")[0];
+      // console.log(patientId,doctorId, appointmentDate, symptoms, notes);
 
-            const dateStartUTC = new Date(`${dateStr}T00:00:00Z`);
-            const dateEndUTC = new Date(`${dateStr}T23:59:59.999Z`);
+      if (!patientId || !doctorId || !appointmentDate || !symptoms) {
+        return res.json({
+          acknowledgement: false,
+          message:
+            "Patient ID, Doctor ID, Appointment Date, and Symptoms are required",
+        });
+      }
 
-            console.log(dateStartUTC);
-            console.log(dateEndUTC);
+      const dateStr = new Date(appointmentDate).toISOString().split("T")[0];
 
-            const existingAppointments = await Appointment.find({
-                doctorId,
-                appointmentDate: { $gte: dateStartUTC, $lte: dateEndUTC },
-            });
+      const dateStartUTC = new Date(`${dateStr}T00:00:00Z`);
+      const dateEndUTC = new Date(`${dateStr}T23:59:59.999Z`);
 
-            const queueNumber = existingAppointments.length + 1;
+      console.log(dateStartUTC);
+      console.log(dateEndUTC);
 
-            const appointment = new Appointment({
-                patientId,
-                doctorId,
-                appointmentDate,
-                symptoms,
-                notes,
-                queueNumber,
-            });
+      const existingAppointments = await Appointment.find({
+        doctorId,
+        appointmentDate: { $gte: dateStartUTC, $lte: dateEndUTC },
+      });
 
-            await appointment.save();
+      const queueNumber = existingAppointments.length + 1;
 
-            return res.json({
-                acknowledgement: true,
-                message: "Appointment created successfully",
-                data: appointment,
-            });
-        } catch (error) {
-            return res.json({
-                acknowledgement: false,
-                message: "Error",
-                description: error instanceof Error ? error.message : "An unknown error occurred",
-            });
-        }
-    },
+      const appointment = new Appointment({
+        patientId,
+        doctorId,
+        appointmentDate,
+        symptoms,
+        notes,
+        queueNumber,
+      });
 
-    // Get appointment by ID
-    getAppointmentById: async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const { id } = req.params;
+      await appointment.save();
 
-            const appointment = await Appointment.findById(id);
+      return res.json({
+        acknowledgement: true,
+        message: "Appointment created successfully",
+        data: appointment,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
 
-            if (!appointment) {
-                return res.json({
-                    acknowledgement: false,
-                    message: "Appointment not found",
-                });
-            }
+  // Get appointment by ID
+  getAppointmentById: async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
+    try {
+      const { id } = req.params;
 
-            return res.json({
-                acknowledgement: true,
-                data: appointment,
-            });
-        } catch (error) {
-            return res.json({
-                acknowledgement: false,
-                message: "Error",
-                description: error instanceof Error ? error.message : "An unknown error occurred",
-            });
-        }
-    },
+      const appointment = await Appointment.findById(id);
 
-    // Get all appointments by doctor
-    getAppointmentsByDoctor: async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const { doctorId } = req.params;
+      if (!appointment) {
+        return res.json({
+          acknowledgement: false,
+          message: "Appointment not found",
+        });
+      }
 
-            const appointments = await Appointment.find({ doctorId });
+      return res.json({
+        acknowledgement: true,
+        data: appointment,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
 
-            if (!appointments || appointments.length === 0) {
-                return res.json({
-                    acknowledgement: false,
-                    message: "No appointments found for this doctor",
-                });
-            }
+  // Get all appointments by doctor
+  getAppointmentsByDoctor: async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
+    try {
+      const { doctorId } = req.params;
 
-            return res.json({
-                acknowledgement: true,
-                data: appointments,
-            });
-        } catch (error) {
-            return res.json({
-                acknowledgement: false,
-                message: "Error",
-                description: error instanceof Error ? error.message : "An unknown error occurred",
-            });
-        }
-    },
+      const appointments = await Appointment.find({ doctorId });
 
-    // Get all appointments by patient
-    getAppointmentsByPatient: async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const { patientId } = req.params;
+      if (!appointments || appointments.length === 0) {
+        return res.json({
+          acknowledgement: false,
+          message: "No appointments found for this doctor",
+        });
+      }
 
-            // const appointments = await Appointment.find({ patientId });
-            const appointments = await Appointment.aggregate([
-                {
-                  $lookup: {
-                    from: 'users',
-                    localField: 'doctorId',
-                    foreignField: '_id',
-                    as: 'doctorDetails',
-                  },
-                },
-                {
-                  $unwind: '$doctorDetails',
-                },
-                {
-                  $project: {
-                    symptoms: 1,
-                    createdAt: 1,
-                    patientId: 1,
-                    doctorId: 1,
-                    __v: 1,
-                    queueNumber: 1,
-                    _id: 1,
-                    priority: 1,
-                    appointmentDate: 1,
-                    status: 1,
-                    updatedAt: 1,
-                    doctorName: '$doctorDetails.name', // Project doctor name as a top-level field
-                    doctorAvatarUrl: '$doctorDetails.avatar.url', // Project doctor avatar URL as a top-level field
-                  },
-                },
-              ]);
-              
-              
+      return res.json({
+        acknowledgement: true,
+        data: appointments,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
 
-            if (!appointments || appointments.length === 0) {
-                return res.json({
-                    acknowledgement: false,
-                    message: "No appointments found for this patient",
-                });
-            }
+  // Get all appointments by patient
+  getAppointmentsByPatient: async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
+    try {
+      const { patientId } = req.params;
 
-            return res.json({
-                acknowledgement: true,
-                data: appointments,
-            });
-        } catch (error) {
-            return res.json({
-                acknowledgement: false,
-                message: "Error",
-                description: error instanceof Error ? error.message : "An unknown error occurred",
-            });
-        }
-    },
+      // const appointments = await Appointment.find({ patientId });
+      const appointments = await Appointment.aggregate([
+        {
+          $lookup: {
+            from: "users",
+            localField: "doctorId",
+            foreignField: "_id",
+            as: "doctorDetails",
+          },
+        },
+        {
+          $unwind: "$doctorDetails",
+        },
+        {
+          $project: {
+            symptoms: 1,
+            createdAt: 1,
+            patientId: 1,
+            doctorId: 1,
+            __v: 1,
+            queueNumber: 1,
+            _id: 1,
+            priority: 1,
+            appointmentDate: 1,
+            status: 1,
+            updatedAt: 1,
+            doctorName: "$doctorDetails.name", // Project doctor name as a top-level field
+            doctorAvatarUrl: "$doctorDetails.avatar.url", // Project doctor avatar URL as a top-level field
+          },
+        },
+      ]);
 
-    // Get appointments by doctor on a specific date
-    getAppointmentsByDoctorOnDate: async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const { doctorId, date } = req.params;
+      if (!appointments || appointments.length === 0) {
+        return res.json({
+          acknowledgement: false,
+          message: "No appointments found for this patient",
+        });
+      }
 
-            const dateStart = new Date(date);
-            dateStart.setHours(0, 0, 0, 0);
-            const dateEnd = new Date(date);
-            dateEnd.setHours(23, 59, 59, 999);
+      return res.json({
+        acknowledgement: true,
+        data: appointments,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
+  // Get appointments by doctor on a specific date
+  getAppointmentsByDoctorOnDate: async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
+    try {
+      const { doctorId, date } = req.params;
 
-            const appointments = await Appointment.find({
-                doctorId,
-                appointmentDate: { $gte: dateStart, $lte: dateEnd },
-            });
+      const dateStart = new Date(date);
+      dateStart.setHours(0, 0, 0, 0);
+      const dateEnd = new Date(date);
+      dateEnd.setHours(23, 59, 59, 999);
 
-            if (!appointments || appointments.length === 0) {
-                return res.json({
-                    acknowledgement: false,
-                    message: "No appointments found for this doctor on this date",
-                });
-            }
+      const appointments = await Appointment.find({
+        doctorId,
+        appointmentDate: { $gte: dateStart, $lte: dateEnd },
+      });
 
-            return res.json({
-                acknowledgement: true,
-                data: appointments,
-            });
-        } catch (error) {
-            return res.json({
-                acknowledgement: false,
-                message: "Error",
-                description: error instanceof Error ? error.message : "An unknown error occurred",
-            });
-        }
-    },
+      if (!appointments || appointments.length === 0) {
+        return res.json({
+          acknowledgement: false,
+          message: "No appointments found for this doctor on this date",
+        });
+      }
 
-    // Get appointments by patient on a specific date
-    getAppointmentsByPatientOnDate: async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const { patientId, date } = req.params;
+      return res.json({
+        acknowledgement: true,
+        data: appointments,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
 
-            const dateStart = new Date(date);
-            dateStart.setHours(0, 0, 0, 0); // Start of the day
-            const dateEnd = new Date(date);
-            dateEnd.setHours(23, 59, 59, 999); // End of the day
+  // Get appointments by patient on a specific date
+  getAppointmentsByPatientOnDate: async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
+    try {
+      const { patientId, date } = req.params;
 
-            const appointments = await Appointment.find({
-                patientId,
-                appointmentDate: { $gte: dateStart, $lte: dateEnd },
-            });
+      const dateStart = new Date(date);
+      dateStart.setHours(0, 0, 0, 0); // Start of the day
+      const dateEnd = new Date(date);
+      dateEnd.setHours(23, 59, 59, 999); // End of the day
 
-            if (!appointments || appointments.length === 0) {
-                return res.json({
-                    acknowledgement: false,
-                    message: "No appointments found for this patient on this date",
-                });
-            }
+      const appointments = await Appointment.find({
+        patientId,
+        appointmentDate: { $gte: dateStart, $lte: dateEnd },
+      });
 
-            return res.json({
-                acknowledgement: true,
-                data: appointments,
-            });
-        } catch (error) {
-            return res.json({
-                acknowledgement: false,
-                message: "Error",
-                description: error instanceof Error ? error.message : "An unknown error occurred",
-            });
-        }
-    },
+      if (!appointments || appointments.length === 0) {
+        return res.json({
+          acknowledgement: false,
+          message: "No appointments found for this patient on this date",
+        });
+      }
 
-    // Update appointment status
-    // updateAppointmentStatus: async (req: Request, res: Response): Promise<Response> => {
-    //     try {
-    //         const { id } = req.params;
-    //         const { status } = req.body;
+      return res.json({
+        acknowledgement: true,
+        data: appointments,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
 
-    //         if (!status || !["pending", "confirmed", "completed", "cancelled"].includes(status)) {
-    //             return res.json({
-    //                 acknowledgement: false,
-    //                 message: "Status is required and must be one of 'pending', 'confirmed', 'completed', or 'cancelled'",
-    //             });
-    //         }
+  // Update appointment status
+  // updateAppointmentStatus: async (req: Request, res: Response): Promise<Response> => {
+  //     try {
+  //         const { id } = req.params;
+  //         const { status } = req.body;
 
-    //         const appointment = await Appointment.findById(id);
+  //         if (!status || !["pending", "confirmed", "completed", "cancelled"].includes(status)) {
+  //             return res.json({
+  //                 acknowledgement: false,
+  //                 message: "Status is required and must be one of 'pending', 'confirmed', 'completed', or 'cancelled'",
+  //             });
+  //         }
 
-    //         if (!appointment) {
-    //             return res.json({
-    //                 acknowledgement: false,
-    //                 message: "Appointment not found",
-    //             });
-    //         }
+  //         const appointment = await Appointment.findById(id);
 
-    //         const originalStatus = appointment.status;
-    //         const doctorId = appointment.doctorId.toString();
-    //         appointment.status = status;
-    //         appointment.updatedAt = new Date();
-    //         await appointment.save();
+  //         if (!appointment) {
+  //             return res.json({
+  //                 acknowledgement: false,
+  //                 message: "Appointment not found",
+  //             });
+  //         }
 
-    //         const today = new Date().toISOString().split("T")[0];
-    //         const appointmentDate = new Date(appointment.appointmentDate).toISOString().split("T")[0];
+  //         const originalStatus = appointment.status;
+  //         const doctorId = appointment.doctorId.toString();
+  //         appointment.status = status;
+  //         appointment.updatedAt = new Date();
+  //         await appointment.save();
 
-    //         if (appointmentDate === today && originalStatus !== status) {
-    //             await updateRedisForTodayAppointments(doctorId);
-    //         }
+  //         const today = new Date().toISOString().split("T")[0];
+  //         const appointmentDate = new Date(appointment.appointmentDate).toISOString().split("T")[0];
 
-    //         return res.json({
-    //             acknowledgement: true,
-    //             message: "Appointment status updated successfully",
-    //             data: appointment,
-    //         });
-    //     } catch (error) {
-    //         return res.json({
-    //             acknowledgement: false,
-    //             message: "Error",
-    //             description: error instanceof Error ? error.message : "An unknown error occurred",
-    //         });
-    //     }
-    // },
+  //         if (appointmentDate === today && originalStatus !== status) {
+  //             await updateRedisForTodayAppointments(doctorId);
+  //         }
 
-    // Update appointment priority
-    updateAppointmentPriority: async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const { id } = req.params;
-            const { priority } = req.body;
+  //         return res.json({
+  //             acknowledgement: true,
+  //             message: "Appointment status updated successfully",
+  //             data: appointment,
+  //         });
+  //     } catch (error) {
+  //         return res.json({
+  //             acknowledgement: false,
+  //             message: "Error",
+  //             description: error instanceof Error ? error.message : "An unknown error occurred",
+  //         });
+  //     }
+  // },
 
-            if (!priority || !["low", "medium", "high"].includes(priority)) {
-                return res.json({
-                    acknowledgement: false,
-                    message: "Priority is required and must be one of 'low', 'medium', or 'high'",
-                });
-            }
+  // Update appointment priority
+  updateAppointmentPriority: async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
+    try {
+      const { id } = req.params;
+      const { priority } = req.body;
 
-            const appointment = await Appointment.findById(id);
+      if (!priority || !["low", "medium", "high"].includes(priority)) {
+        return res.json({
+          acknowledgement: false,
+          message:
+            "Priority is required and must be one of 'low', 'medium', or 'high'",
+        });
+      }
 
-            if (!appointment) {
-                return res.json({
-                    acknowledgement: false,
-                    message: "Appointment not found",
-                });
-            }
+      const appointment = await Appointment.findById(id);
 
-            appointment.priority = priority;
-            appointment.updatedAt = new Date();
+      if (!appointment) {
+        return res.json({
+          acknowledgement: false,
+          message: "Appointment not found",
+        });
+      }
 
-            await appointment.save();
+      appointment.priority = priority;
+      appointment.updatedAt = new Date();
 
-            return res.json({
-                acknowledgement: true,
-                message: "Appointment priority updated successfully",
-                data: appointment,
-            });
-        } catch (error) {
-            return res.json({
-                acknowledgement: false,
-                message: "Error",
-                description: error instanceof Error ? error.message : "An unknown error occurred",
-            });
-        }
-    },
+      await appointment.save();
 
-    // Delete an appointment
-    deleteAppointment: async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const { id } = req.params;
+      return res.json({
+        acknowledgement: true,
+        message: "Appointment priority updated successfully",
+        data: appointment,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
 
-            const deletedAppointment = await Appointment.findByIdAndDelete(id);
+  // Delete an appointment
+  deleteAppointment: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { id } = req.params;
 
-            if (!deletedAppointment) {
-                return res.json({
-                    acknowledgement: false,
-                    message: "Appointment not found",
-                });
-            }
+      const deletedAppointment = await Appointment.findByIdAndDelete(id);
 
-            return res.json({
-                acknowledgement: true,
-                message: "Appointment deleted successfully",
-            });
-        } catch (error) {
-            return res.json({
-                acknowledgement: false,
-                message: "Error",
-                description: error instanceof Error ? error.message : "An unknown error occurred",
-            });
-        }
-    },
+      if (!deletedAppointment) {
+        return res.json({
+          acknowledgement: false,
+          message: "Appointment not found",
+        });
+      }
 
-    // getTodayAppointmentStats: async (req: Request, res: Response): Promise<Response> => {
-    //     const { doctorId } = req.params;
+      return res.json({
+        acknowledgement: true,
+        message: "Appointment deleted successfully",
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
 
-    //     try {
-    //         const totalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
-    //         const completed = await redisUtil.getFromRedis(getCompletedKey(doctorId));
+  // getTodayAppointmentStats: async (req: Request, res: Response): Promise<Response> => {
+  //     const { doctorId } = req.params;
 
-    //         if (totalServe && completed) {
-    //             return res.json({
-    //                 acknowledgement: true,
-    //                 data: {
-    //                     totalServe: Number(totalServe),
-    //                     completed: Number(completed),
-    //                 },
-    //             });
-    //         }
+  //     try {
+  //         const totalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
+  //         const completed = await redisUtil.getFromRedis(getCompletedKey(doctorId));
 
-    //         await updateRedisForTodayAppointments(doctorId);
+  //         if (totalServe && completed) {
+  //             return res.json({
+  //                 acknowledgement: true,
+  //                 data: {
+  //                     totalServe: Number(totalServe),
+  //                     completed: Number(completed),
+  //                 },
+  //             });
+  //         }
 
-    //         const newTotalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
-    //         const newCompleted = await redisUtil.getFromRedis(getCompletedKey(doctorId));
+  //         await updateRedisForTodayAppointments(doctorId);
 
-    //         return res.json({
-    //             acknowledgement: true,
-    //             data: {
-    //                 totalServe: Number(newTotalServe),
-    //                 completed: Number(newCompleted),
-    //             },
-    //         });
-    //     } catch (error) {
-    //         return res.json({
-    //             acknowledgement: false,
-    //             message: "Error",
-    //             description: error instanceof Error ? error.message : "An unknown error occurred",
-    //         });
-    //     }
-    // },
+  //         const newTotalServe = await redisUtil.getFromRedis(getTotalServeKey(doctorId));
+  //         const newCompleted = await redisUtil.getFromRedis(getCompletedKey(doctorId));
 
+  //         return res.json({
+  //             acknowledgement: true,
+  //             data: {
+  //                 totalServe: Number(newTotalServe),
+  //                 completed: Number(newCompleted),
+  //             },
+  //         });
+  //     } catch (error) {
+  //         return res.json({
+  //             acknowledgement: false,
+  //             message: "Error",
+  //             description: error instanceof Error ? error.message : "An unknown error occurred",
+  //         });
+  //     }
+  // },
 };

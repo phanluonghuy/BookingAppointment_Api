@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { appointmentController } from "../controllers/appointmentController";
+import verify from "../middlewares/verifyMiddleware";
 
 const appointmentRouter = Router();
 
