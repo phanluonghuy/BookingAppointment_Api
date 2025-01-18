@@ -4,11 +4,6 @@ import Appointment from "../models/appointmentModel";
 import { verifyandget_id } from "../utils/tokenUtil";
 import mongoose from "mongoose";
 
-const getTotalServeKey = (doctorId: string) =>
-  `appointments:today:${doctorId}:totalServe`;
-const getCompletedKey = (doctorId: string) =>
-  `appointments:today:${doctorId}:completed`;
-
 // const updateRedisForTodayAppointments = async (doctorId: string): Promise<void> => {
 //     const dateStr = new Date().toISOString().split("T")[0];
 //     const dateStartUTC = new Date(`${dateStr}T00:00:00Z`);
@@ -147,7 +142,75 @@ export const appointmentService = {
       });
     }
   },
+  getNearestAppointment: async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
+    try {
+      const token = req.headers.authorization?.split(" ")[1];
+      const patientId = verifyandget_id(token as string); // Replace with your token verification logic
 
+      const appointments = await Appointment.aggregate([
+        {
+          $lookup: {
+            from: "users",
+            localField: "doctorId",
+            foreignField: "_id",
+            as: "doctorDetails",
+          },
+        },
+        {
+          $unwind: "$doctorDetails",
+        },
+        {
+          $match: {
+            patientId: new mongoose.Types.ObjectId(patientId), // Filter appointments for the specific patient
+            appointmentDate: { $gte: new Date() }, // Filter appointments in the future or now
+          },
+        },
+        {
+          $sort: { appointmentDate: 1 }, // Sort by the nearest appointment date
+        },
+        {
+          $project: {
+            symptoms: 1,
+            createdAt: 1,
+            patientId: 1,
+            doctorId: 1,
+            __v: 1,
+            queueNumber: 1,
+            _id: 1,
+            priority: 1,
+            appointmentDate: 1,
+            status: 1,
+            updatedAt: 1,
+            doctorName: "$doctorDetails.name",
+            doctorAvatarUrl: "$doctorDetails.avatar.url",
+          },
+        },
+        { $limit: 1 }, // Only get the nearest appointment
+      ]);
+
+      if (!appointments || appointments.length === 0) {
+        return res.json({
+          acknowledgement: false,
+          message: "No upcoming appointments found for this patient",
+        });
+      }
+
+      return res.json({
+        acknowledgement: true,
+        data: appointments[0], // Return the nearest appointment
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
   // Get all appointments by patient
   getAppointmentsByPatient: async (
     req: Request,
