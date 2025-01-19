@@ -4,22 +4,16 @@ import Appointment from "../models/appointmentModel";
 import { verifyandget_id } from "../utils/tokenUtil";
 import mongoose from "mongoose";
 
-// const updateRedisForTodayAppointments = async (doctorId: string): Promise<void> => {
-//     const dateStr = new Date().toISOString().split("T")[0];
-//     const dateStartUTC = new Date(`${dateStr}T00:00:00Z`);
-//     const dateEndUTC = new Date(`${dateStr}T23:59:59.999Z`);
+// const getTotalServeKey = (doctorId: string) => `appointments:today:${doctorId}:totalServe`;
+// const getCompletedKey = (doctorId: string) => `appointments:today:${doctorId}:completed`;
 
-//     const appointments = await Appointment.find({
-//         doctorId: doctorId,
-//         appointmentDate: { $gte: dateStartUTC, $lte: dateEndUTC },
-//     });
+const updateRedisForTodayAppointments = async (doctorId: string): Promise<any> => {
+    const dateStr = new Date().toISOString().split("T")[0];
+    const dateStartUTC = new Date(`${dateStr}T00:00:00Z`);
+    const dateEndUTC = new Date(`${dateStr}T23:59:59.999Z`);
 
 //     const totalServe = appointments.filter(a => a.status !== "pending").length;
 //     const completed = appointments.filter(a => ["completed", "cancelled"].includes(a.status)).length;
-
-//     await redisUtil.setToRedis(getTotalServeKey(doctorId), totalServe.toString());
-//     await redisUtil.setToRedis(getCompletedKey(doctorId), completed.toString());
-// }
 
 export const appointmentService = {
   // Create a new appointment
