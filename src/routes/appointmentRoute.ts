@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { appointmentController } from "../controllers/appointmentController";
+import verify from "../middlewares/verifyMiddleware";
 
 const appointmentRouter = Router();
 
 appointmentRouter.post("/", appointmentController.createAppointment);
-appointmentRouter.get("/:id", appointmentController.getAppointmentById);
+appointmentRouter.get("/:id", appointmentController.getAppointmentById); // day =]]
+appointmentRouter.get("/appointment/nearest",verify, appointmentController.getNearestAppointment);
 appointmentRouter.get("/doctor/:doctorId", appointmentController.getAppointmentsByDoctor);
 appointmentRouter.get("/patient/:patientId", appointmentController.getAppointmentsByPatient);
 appointmentRouter.get("/doctor/:doctorId/date/:date", appointmentController.getAppointmentsByDoctorOnDate);

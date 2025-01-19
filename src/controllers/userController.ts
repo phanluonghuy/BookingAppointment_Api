@@ -1,5 +1,5 @@
-import {NextFunction, Request, Response} from 'express';
-import {userService} from '../services/userService';
+import { NextFunction, Request, Response } from "express";
+import { userService } from "../services/userService";
 
 export const userController = {
     signUp: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -284,3 +284,4 @@ export const userController = {
     //     }
     // }
 }
+
