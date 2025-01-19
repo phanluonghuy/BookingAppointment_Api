@@ -57,6 +57,16 @@ export const appointmentController = {
         }
     },
 
+    getNearestAppointment: async (req: Request, res: Response, next: NextFunction): Promise<void> => { 
+        try {
+            await appointmentService.getNearestAppointment(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+
     // Get appointments by patient on a specific date
     getAppointmentsByPatientOnDate: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
@@ -71,7 +81,7 @@ export const appointmentController = {
     // Update appointment status
     updateAppointmentStatus: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            await appointmentService.updateAppointmentStatus(req, res);
+            // await appointmentService.updateAppointmentStatus(req, res);
         } catch (error) {
             next(error);
         } finally {
@@ -104,7 +114,7 @@ export const appointmentController = {
     // Today Appointment Stats
     getTodayAppointmentStats: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            await appointmentService.getTodayAppointmentStats(req, res);
+            // await appointmentService.getTodayAppointmentStats(req, res);
         } catch (error) {
             next(error);
         } finally {

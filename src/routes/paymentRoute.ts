@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { paymentController } from "../controllers/paymentController";
+import verify from "../middlewares/verifyMiddleware";
 
 const paymentRouter = Router();
 
-paymentRouter.post("/", paymentController.createPayment);
+paymentRouter.post("/", verify, paymentController.createPayment);
 paymentRouter.get("/:id", paymentController.getPaymentById);
 paymentRouter.get("/patient/:patientId", paymentController.getPaymentsByPatient);
 paymentRouter.get("/appointment/:appointmentId", paymentController.getPaymentsByAppointment);

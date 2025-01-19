@@ -12,6 +12,7 @@ import Specialization from "../models/specializationModel";
 import WorkSchedule from "../models/workScheduleModel";
 import Review from "../models/reviewModel";
 import {getAvailableWorkHours} from "../utils/ScheduleUtil";
+import { get } from "http";
 // import remove from "../utils/removeUtil";
 // import sendEmail from "../utils/emailUtil";
 // import Cart from "../models/cartModel";
@@ -127,7 +128,7 @@ export const userService = {
   },
   getForgotOTP: async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
-    console.log("Email:", email);
+    // console.log("Email:", email);
     if (!email) {
       res.json({
         acknowledgement: false,
@@ -137,7 +138,7 @@ export const userService = {
       return;
     }
     if (await User.findOne({ email: email })) {
-      console.log("Email already exists");
+      // console.log("Email already exists");
       const otp = Math.floor(1000 + Math.random() * 9000);
       const token = verifyEmailToken(email, otp.toString());
 
@@ -631,16 +632,11 @@ export const userService = {
         (await Review.findOne({ doctorId: id }).populate("ratings")) ||
         undefined;
 
-      var workScheduleDetails = undefined
-      if (workSchedule) {
-        workScheduleDetails = getAvailableWorkHours(workSchedule)
-      }
-
       const fullInfo = {
         doctor,
         specializations,
-        workScheduleDetails,
-        review
+        workSchedule,
+        review,
       };
 
       return res.json({
@@ -700,6 +696,75 @@ export const userService = {
             totalReviews: 1,
             specializations: 1,
           },
+        },
+      ]);
+
+      return res.json({
+        acknowledgement: true,
+        message: "Doctor fetched successfully",
+        data: users,
+      });
+    } catch (error) {
+      return res.json({
+        acknowledgement: false,
+        message: "Error fetching doctor",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },
+
+  getTopDoctors: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const users = await User.aggregate([
+        {
+          // Match users with the role of 'doctor'
+          $match: { role: "doctor" },
+        },
+        {
+          // Lookup reviews for each doctor
+          $lookup: {
+            from: "reviews",
+            localField: "_id",
+            foreignField: "doctorId",
+            as: "reviews",
+          },
+        },
+        {
+          // Add fields for total reviews and average rating
+          $addFields: {
+            totalReviews: { $size: "$reviews" },
+            averageRating: { $avg: "$reviews.averageRating" },
+          },
+        },
+        {
+          // Lookup specializations (assuming a separate collection exists)
+          $lookup: {
+            from: "specializations",
+            localField: "_id",
+            foreignField: "doctorId",
+            as: "specializations",
+          },
+        },
+        {
+          // Project the required fields
+          $project: {
+            name: 1,
+            email: 1,
+            phone: 1,
+            avatar: 1,
+            averageRating: 1,
+            totalReviews: 1,
+            specializations: 1,
+          },
+        },
+        {
+          // Sort by averageRating in descending order
+          $sort: { averageRating: -1 },
+        },
+        {
+          // Limit the results to the top 5
+          $limit: 5,
         },
       ]);
 
