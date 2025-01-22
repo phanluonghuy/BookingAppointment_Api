@@ -115,7 +115,41 @@ export const appointmentService = {
     try {
       const { doctorId } = req.params;
 
-      const appointments = await Appointment.find({ doctorId });
+      const appointments = await Appointment.aggregate([
+        {
+          $match: {
+            doctorId:  new mongoose.Types.ObjectId(doctorId), // Ensure this matches the field name and data type
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "patientId",
+            foreignField: "_id",
+            as: "doctorDetails",
+          },
+        },
+        {
+          $unwind: "$doctorDetails",
+        },
+        {
+          $project: {
+            symptoms: 1,
+            createdAt: 1,
+            patientId: 1,
+            doctorId: 1,
+            __v: 1,
+            queueNumber: 1,
+            _id: 1,
+            priority: 1,
+            appointmentDate: 1,
+            status: 1,
+            updatedAt: 1,
+            doctorName: "$doctorDetails.name", // Project doctor name as a top-level field
+            doctorAvatarUrl: "$doctorDetails.avatar.url", // Project doctor avatar URL as a top-level field
+          },
+        },
+      ]);
 
       if (!appointments || appointments.length === 0) {
         return res.json({
@@ -146,6 +180,11 @@ export const appointmentService = {
       const patientId = verifyandget_id(token as string); // Replace with your token verification logic
 
       const appointments = await Appointment.aggregate([
+        {
+          $match: {
+            patientId:  new mongoose.Types.ObjectId(patientId), // Ensure this matches the field name and data type
+          },
+        },
         {
           $lookup: {
             from: "users",
@@ -216,6 +255,11 @@ export const appointmentService = {
 
       // const appointments = await Appointment.find({ patientId });
       const appointments = await Appointment.aggregate([
+        {
+          $match: {
+            patientId:  new mongoose.Types.ObjectId(patientId), // Ensure this matches the field name and data type
+          },
+        },
         {
           $lookup: {
             from: "users",
