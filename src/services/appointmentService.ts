@@ -8,10 +8,10 @@ import mongoose from "mongoose";
 // const getCompletedKey = (doctorId: string) => `appointments:today:${doctorId}:completed`;
 
 const updateRedisForTodayAppointments = async (doctorId: string): Promise<any> => {
-    const dateStr = new Date().toISOString().split("T")[0];
-    const dateStartUTC = new Date(`${dateStr}T00:00:00Z`);
-    const dateEndUTC = new Date(`${dateStr}T23:59:59.999Z`);
-
+  const dateStr = new Date().toISOString().split("T")[0];
+  const dateStartUTC = new Date(`${dateStr}T00:00:00Z`);
+  const dateEndUTC = new Date(`${dateStr}T23:59:59.999Z`);
+}
 //     const totalServe = appointments.filter(a => a.status !== "pending").length;
 //     const completed = appointments.filter(a => ["completed", "cancelled"].includes(a.status)).length;
 
