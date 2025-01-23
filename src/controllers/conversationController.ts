@@ -21,4 +21,14 @@ export const conversationController = {
             console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
+
+    getConversationsByUserId: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await conversationService.getConversationsByUserId(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
+        }
+    },
 };

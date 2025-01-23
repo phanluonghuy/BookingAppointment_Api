@@ -23,12 +23,7 @@ export const socketService = {
             status: "sent",
         });
 
-        const populatedMessage = await Message.findById(newMessage._id)
-            .populate("from")
-            .populate("to")
-            .exec();
-
-        return { conversation, populatedMessage };
+        return { conversation, newMessage };
     },
 
     getMessages: async (conversationId: string): Promise<IMessage[] | null> => {

@@ -76,4 +76,39 @@ export const conversationService = {
             });
         }
     },
+
+    getConversationsByUserId: async (req: Request, res: Response): Promise<Response> => {
+        const { userId } = req.params;
+
+        if (!userId) {
+            return res.json({
+                acknowledgement: false,
+                message: "Missing required fields: userId",
+            });
+        }
+
+        try {
+            const conversations = await Conversation.find({
+                participants: { $all: [userId] },
+            }).populate("participants");
+
+            if (!conversations) {
+                return res.json({
+                    acknowledgement: false,
+                    message: "Conversations not found",
+                });
+            }
+
+            return res.json({
+                acknowledgement: true,
+                data: conversations,
+            });
+        } catch (error) {
+            return res.json({
+                acknowledgement: false,
+                message: "Error retrieving conversations",
+                description: error instanceof Error ? error.message : "An unknown error occurred",
+            });
+        }
+    }
 };

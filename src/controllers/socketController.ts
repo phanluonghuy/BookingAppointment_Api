@@ -14,19 +14,19 @@ export const socketController = {
 
     sendMessage: (io: Server, socket: Socket) => async (data: any) => {
         try {
-            const { conversation, populatedMessage } = await socketService.sendMessage(data);
+            const { conversation, newMessage } = await socketService.sendMessage(data);
 
             if (!conversation) {
                 console.error("Conversation not found or failed to create.");
                 return;
             }
 
-            if (!populatedMessage) {
+            if (!newMessage) {
                 console.error("Message creation failed.");
                 return;
             }
 
-            io.to(conversation.id).emit("newMessage", populatedMessage);
+            io.to(conversation.id).emit("newMessage", newMessage);
 
             console.log(`Message sent to room ${conversation.id}`);
         } catch (error) {
