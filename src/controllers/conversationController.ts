@@ -31,4 +31,24 @@ export const conversationController = {
             console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
         }
     },
+
+    uploadFile: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await conversationService.uploadFile(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
+        }
+    },
+
+    updateConversationById: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await conversationService.updateConversationById(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
+        }
+    },
 };

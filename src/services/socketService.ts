@@ -1,6 +1,7 @@
 import Message, { IMessage } from "../models/messageModel";
 import Conversation, { IConversation } from "../models/conversationModel";
 
+
 export const socketService = {
     sendMessage: async (message: IMessage): Promise<any> => {
         const { from, to, content, messageType } = message;

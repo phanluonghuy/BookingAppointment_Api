@@ -6,6 +6,8 @@ export interface IMessage extends Document {
     content: string;
     messageType: "text" | "image" | "video";
     status: "sent" | "delivered" | "read";
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const MessageSchema: Schema<IMessage> = new Schema(
