@@ -389,53 +389,53 @@ export const appointmentService = {
   },
 
   // Update appointment status
-  // updateAppointmentStatus: async (req: Request, res: Response): Promise<Response> => {
-  //     try {
-  //         const { id } = req.params;
-  //         const { status } = req.body;
+  updateAppointmentStatus: async (req: Request, res: Response): Promise<Response> => {
+      try {
+          const { id } = req.params;
+          const { status } = req.body;
 
-  //         if (!status || !["pending", "confirmed", "completed", "cancelled"].includes(status)) {
-  //             return res.json({
-  //                 acknowledgement: false,
-  //                 message: "Status is required and must be one of 'pending', 'confirmed', 'completed', or 'cancelled'",
-  //             });
-  //         }
+          if (!status || !["pending", "confirmed", "completed", "cancelled"].includes(status)) {
+              return res.json({
+                  acknowledgement: false,
+                  message: "Status is required and must be one of 'pending', 'confirmed', 'completed', or 'cancelled'",
+              });
+          }
 
-  //         const appointment = await Appointment.findById(id);
+          const appointment = await Appointment.findById(id);
 
-  //         if (!appointment) {
-  //             return res.json({
-  //                 acknowledgement: false,
-  //                 message: "Appointment not found",
-  //             });
-  //         }
+          if (!appointment) {
+              return res.json({
+                  acknowledgement: false,
+                  message: "Appointment not found",
+              });
+          }
 
-  //         const originalStatus = appointment.status;
-  //         const doctorId = appointment.doctorId.toString();
-  //         appointment.status = status;
-  //         appointment.updatedAt = new Date();
-  //         await appointment.save();
+          const originalStatus = appointment.status;
+          const doctorId = appointment.doctorId.toString();
+          appointment.status = status;
+          appointment.updatedAt = new Date();
+          await appointment.save();
 
-  //         const today = new Date().toISOString().split("T")[0];
-  //         const appointmentDate = new Date(appointment.appointmentDate).toISOString().split("T")[0];
+          const today = new Date().toISOString().split("T")[0];
+          const appointmentDate = new Date(appointment.appointmentDate).toISOString().split("T")[0];
 
-  //         if (appointmentDate === today && originalStatus !== status) {
-  //             await updateRedisForTodayAppointments(doctorId);
-  //         }
+          if (appointmentDate === today && originalStatus !== status) {
+              await updateRedisForTodayAppointments(doctorId);
+          }
 
-  //         return res.json({
-  //             acknowledgement: true,
-  //             message: "Appointment status updated successfully",
-  //             data: appointment,
-  //         });
-  //     } catch (error) {
-  //         return res.json({
-  //             acknowledgement: false,
-  //             message: "Error",
-  //             description: error instanceof Error ? error.message : "An unknown error occurred",
-  //         });
-  //     }
-  // },
+          return res.json({
+              acknowledgement: true,
+              message: "Appointment status updated successfully",
+              data: appointment,
+          });
+      } catch (error) {
+          return res.json({
+              acknowledgement: false,
+              message: "Error",
+              description: error instanceof Error ? error.message : "An unknown error occurred",
+          });
+      }
+  },
 
   // Update appointment priority
   updateAppointmentPriority: async (
