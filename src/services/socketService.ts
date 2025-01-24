@@ -40,7 +40,7 @@ export const socketService = {
                 { from: { $in: conversation.participants } },
                 { to: { $in: conversation.participants } }
             ]
-        });
+        }).sort({ createdAt: 1 });
     },
 
     getConversation: async (fromId: string, toId: string): Promise<IConversation | null> => {
@@ -48,4 +48,36 @@ export const socketService = {
             participants: { $all: [fromId, toId] },
         });
     },
+
+    seenMessage: async (userId: string, conversationId: string): Promise<number> => {
+        try {
+            const messages = await socketService.getMessages(conversationId);
+
+            if (!messages || messages.length === 0) {
+                console.warn(`No messages found for conversation ${conversationId}`);
+                return 0;
+            }
+
+            const messageIdsToUpdate = messages
+                .filter((message) => message.to.toString() === userId && message.status !== "read")
+                .map((message) => message._id);
+
+            if (messageIdsToUpdate.length === 0) {
+                console.log(`No messages to mark as read for user ${userId} in conversation ${conversationId}`);
+                return 0;
+            }
+
+            const result = await Message.updateMany(
+                { _id: { $in: messageIdsToUpdate } },
+                { $set: { status: "read" } }
+            );
+
+            console.log(`${result.modifiedCount} messages marked as read for user ${userId} in conversation ${conversationId}`);
+            return result.modifiedCount;
+        } catch (error) {
+            console.error("Error marking messages as seen:", error);
+            throw error;
+        }
+    },
+
 };

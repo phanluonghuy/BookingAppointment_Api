@@ -114,7 +114,6 @@ export const conversationService = {
     },
 
     updateConversationById: async (req: Request, res: Response): Promise<Response> => {
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
         const { conversationId } = req.params;
         if (!conversationId) {
             return res.json({
@@ -139,8 +138,6 @@ export const conversationService = {
             })
                 .sort({ createdAt: -1 })
                 .limit(1);
-
-            console.log(latestMessage)
 
             if (!latestMessage) {
                 return res.json({
