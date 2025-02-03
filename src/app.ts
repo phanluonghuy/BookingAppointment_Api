@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import session from "express-session";
 import cors from "cors";
 import error from "./middlewares/errorMiddleware";
+import favicon from "serve-favicon";
 import http from "http";
 import {initializeSocket} from "./utils/socketUtil";
 
@@ -25,6 +26,7 @@ import dosageRouter from "./routes/dosageRoute";
 import prescriptionRouter from "./routes/prescriptionRoute";
 import notificationRouter from './routes/notificationRoute';
 import conversationRouter from "./routes/conversationRoute";
+import path from "path";
 
 // Load environment variables
 dotenv.config();
@@ -54,6 +56,8 @@ app.use(
         saveUninitialized: true
     })
 );
+
+app.use(favicon(path.join(__dirname, "../favicon.ico")));
 
 app.use("/api/user", userRouter);
 app.use("/api/allergy", allergyRouter);
