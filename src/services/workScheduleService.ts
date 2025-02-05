@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import WorkSchedule from "../models/workScheduleModel";
 
 export const workScheduleService = {
@@ -24,6 +24,17 @@ export const workScheduleService = {
                 return res.json({
                     acknowledgement: false,
                     message: "Available times must be an array",
+                });
+            }
+
+
+            const exitedWorkSchedule = await WorkSchedule.findOne({ doctorId });
+
+            if (exitedWorkSchedule) {
+                await WorkSchedule.findOneAndUpdate({ doctorId }, { availableTimes });
+                return res.json({
+                    acknowledgement: true,
+                    message: "Updated work schedule successfully",
                 });
             }
 
