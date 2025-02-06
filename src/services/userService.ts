@@ -11,7 +11,7 @@ import remove from "../utils/removeUtil";
 import Specialization from "../models/specializationModel";
 import WorkSchedule from "../models/workScheduleModel";
 import Review from "../models/reviewModel";
-import {getAvailableWorkHours} from "../utils/ScheduleUtil";
+import {getAvailableWorkHours} from "../utils/scheduleUtil";
 import { get } from "http";
 // import remove from "../utils/removeUtil";
 // import sendEmail from "../utils/emailUtil";
