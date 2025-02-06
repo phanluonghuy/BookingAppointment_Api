@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import TestResult from "../models/testResultModel";
+import { ObjectId } from "mongodb";
 
 export const testResultService = {
     // Create a new TestResult
@@ -39,9 +40,10 @@ export const testResultService = {
     // Get a test result by ID
     getTestResultById: async (req: Request, res: Response): Promise<Response> => {
         const { id } = req.params;
+        console.log(id);
 
         try {
-            const testResult = await TestResult.findById(id);
+            const testResult = await TestResult.findOne({ appointmentId: new ObjectId(id) });
 
             if (!testResult) {
                 return res.json({

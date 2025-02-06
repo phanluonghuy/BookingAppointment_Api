@@ -248,7 +248,7 @@ export const userService = {
           });
           res.json({
             acknowledgement: true,
-            message: "Success",
+            message: user.role,
             // description: (user.role === "guest") ? "Create Guest session successfully" : "User logged in successfully",
             description: "User logged in successfully",
             data: tokenAccess,
