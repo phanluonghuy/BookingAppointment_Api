@@ -24,6 +24,16 @@ export const prescriptionController = {
         }
     },
 
+    getPrescriptionByAppointmentId: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await prescriptionService.getPrescriptionByAppointmentId(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
+        }
+    },
+
     // Get all prescriptions
     getAllPrescriptions: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {

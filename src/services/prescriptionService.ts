@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import Prescription from "../models/prescriptionModel";
+import MedicalRecord from "../models/medicalRecordModel";
+import Dosage from "../models/dosageModel";
 
 export const prescriptionService = {
     // Create a new prescription
@@ -33,6 +35,42 @@ export const prescriptionService = {
                 description: error instanceof Error ? error.message : "An unknown error occurred",
             });
         }
+    },
+
+    getPrescriptionByAppointmentId: async (req: Request, res: Response): Promise<Response> => {
+        const { appointmentId } = req.params;
+
+        try {
+            const medicalRecord = await MedicalRecord.findOne({ appointmentId }).exec();
+            if (!medicalRecord) {
+                return res.json({
+                    acknowledgement: false,
+                    message: "Prescription not found",
+                });
+            }
+
+            const prescriptions = await Prescription.find({ medicalRecordId: medicalRecord._id }).exec();
+            if (!prescriptions) { 
+                return res.json({
+                    acknowledgement: false,
+                    message: "Prescription not found",
+                });
+            }
+
+            console.log(prescriptions[0].dosageDetails[0]);
+
+            const dosage = await Dosage.findById(prescriptions[0].dosageDetails[0]).exec();
+
+            return res.json({
+                acknowledgement: true,
+                message: "Prescription found",
+                data: prescriptions,dosage
+            });
+        } catch (error) {
+            console.error("Error fetching prescriptions:", error);
+            throw error;
+        }
+        
     },
 
     // Get prescription by ID

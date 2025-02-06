@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import MedicalRecord from '../models/medicalRecordModel'
+import { ObjectId } from "mongodb";
+import TestResult from "../models/testResultModel";
 
 export const medicalRecordService = {
     // Create a new medical record
@@ -41,8 +43,7 @@ export const medicalRecordService = {
         try {
             const { id } = req.params;
 
-            const medicalRecord = await MedicalRecord.findById(id); // .populate("appointmentId");
-
+            const medicalRecord = await MedicalRecord.findOne({appointmentId: new ObjectId(id)}) // .populate("appointmentId");
             if (!medicalRecord) {
                 return res.json({
                     acknowledgement: false,
@@ -50,10 +51,23 @@ export const medicalRecordService = {
                 });
             }
 
+            const testResult = await TestResult.findOne({medicalRecordId: medicalRecord._id});
+
+            if (!testResult) {
+                return res.json({
+                    acknowledgement: false,
+                    message: "Test record not found",
+                });
+            }
+
             return res.json({
                 acknowledgement: true,
-                data: medicalRecord,
+                data: {
+                    medicalRecord,
+                    testResult
+                }
             });
+            
         } catch (error) {
             return res.json({
                 acknowledgement: false,
