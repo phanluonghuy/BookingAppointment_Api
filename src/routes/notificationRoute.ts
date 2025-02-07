@@ -8,5 +8,6 @@ notificationRouter.get("/:id", notificationController.getNotificationById);
 notificationRouter.get("/user/:userId", notificationController.getAllNotifications);
 notificationRouter.patch("/:id", notificationController.updateNotificationStatus);
 notificationRouter.delete("/:id", notificationController.deleteNotification);
+// notificationRouter.get("/getAllNotifications/:userId", notificationController.getAllNotifications);
 
 export default notificationRouter;

@@ -3,6 +3,10 @@ import { Request, Response } from "express";
 import Appointment from "../models/appointmentModel";
 import { verifyandget_id } from "../utils/tokenUtil";
 import mongoose from "mongoose";
+import MedicalRecord from "../models/medicalRecordModel";
+import TestResult from "../models/testResultModel";
+import Prescription from "../models/prescriptionModel";
+import Dosage from "../models/dosageModel";
 
 // const getTotalServeKey = (doctorId: string) => `appointments:today:${doctorId}:totalServe`;
 // const getCompletedKey = (doctorId: string) => `appointments:today:${doctorId}:completed`;
@@ -177,6 +181,7 @@ export const appointmentService = {
     try {
       const token = req.headers.authorization?.split(" ")[1];
       const patientId = verifyandget_id(token as string); // Replace with your token verification logic
+      console.log(patientId);
 
       const appointments = await Appointment.aggregate([
         {
@@ -198,7 +203,7 @@ export const appointmentService = {
         {
           $match: {
             patientId: new mongoose.Types.ObjectId(patientId), // Filter appointments for the specific patient
-            appointmentDate: { $gte: new Date() }, // Filter appointments in the future or now
+            appointmentDate: { $gte: new Date() }, //   Filter appointments in the future or now
           },
         },
         {
@@ -244,6 +249,44 @@ export const appointmentService = {
       });
     }
   },
+
+  getAppointmentDetails: async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { id } = req.params;
+  
+      const appointment = await Appointment.findById(id);
+      if (!appointment) {
+        return res.json({ acknowledgement: false, message: "Appointment not found" });
+      }
+  
+      const medicalRecord = await MedicalRecord.findOne({ appointmentId: appointment._id });
+      if (!medicalRecord) {
+        return res.json({ acknowledgement: true, message: "Appointment found", data: { appointment } });
+      }
+  
+      const [testResult, prescription] = await Promise.all([
+        TestResult.findOne({ medicalRecordId: medicalRecord._id }),
+        Prescription.findOne({ medicalRecordId: medicalRecord._id }),
+      ]);
+  
+      const dosage = prescription?.dosageDetails?.length
+        ? await Dosage.findById(prescription.dosageDetails[0])
+        : null;
+  
+      return res.json({
+        acknowledgement: true,
+        message: "Appointment found",
+        data: { appointment, medicalRecord, testResult, prescription, dosage },
+      });
+  
+    } catch (error) {
+      return res.status(500).json({
+        acknowledgement: false,
+        message: "Error",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  },  
   // Get all appointments by patient
   getAppointmentsByPatient: async (
     req: Request,
