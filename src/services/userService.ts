@@ -629,7 +629,13 @@ export const userService = {
       const workSchedule =
         (await WorkSchedule.findOne({ doctorId: id })) || undefined;
       const review =
-        (await Review.findOne({ doctorId: id }).populate("ratings")) ||
+        (await Review.findOne({ doctorId: id }).populate({
+          path: "ratings",
+          populate: {
+            path: "patientId",
+            model: "User",
+          },
+        })) ||
         undefined;
 
       const fullInfo = {
