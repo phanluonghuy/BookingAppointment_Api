@@ -2,11 +2,14 @@ import { Request, Response } from "express";
 import Prescription from "../models/prescriptionModel";
 import MedicalRecord from "../models/medicalRecordModel";
 import Dosage from "../models/dosageModel";
+import mongoose from "mongoose";
 
 export const prescriptionService = {
     // Create a new prescription
     createPrescription: async (req: Request, res: Response): Promise<Response> => {
-        const { medicalRecordId, dosageDetails } = req.body;
+        const { medicalRecordId, dosageDetails} = req.body;
+
+        console.log(medicalRecordId, dosageDetails);
 
         if (!medicalRecordId || !dosageDetails || !Array.isArray(dosageDetails)) {
             return res.json({
@@ -16,6 +19,23 @@ export const prescriptionService = {
         }
 
         try {
+
+            const existedPrescription = await Prescription.findOne({ medicalRecordId});
+
+            if (existedPrescription) {
+                const updatedPrescription = await Prescription.findOneAndUpdate(
+                    { medicalRecordId },
+                    { dosageDetails },
+                    { new: true }
+                );
+
+                return res.json({
+                    acknowledgement: true,
+                    message: "Prescription updated successfully",
+                    data: updatedPrescription,
+                });
+            }
+
             const prescription = new Prescription({
                 medicalRecordId,
                 dosageDetails,

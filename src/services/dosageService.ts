@@ -11,12 +11,30 @@ export const dosageService = {
             times,
             description,
             duration,
+            id
         } = req.body;
 
         if (!medicineId || !amountPerDose || !frequencyPerDay || !times || !duration) {
             return res.json({
                 acknowledgement: false,
                 message: "Missing required fields: medicineId, amountPerDose, frequencyPerDay, times, or duration",
+            });
+        }
+
+        if (id) {
+            const existingDosage = await Dosage.findByIdAndUpdate(id, {
+                medicineId,
+                amountPerDose,
+                frequencyPerDay,
+                times,
+                description,
+                duration,
+            });
+
+            return res.json({
+                acknowledgement: true,
+                message: "Dosage updated successfully",
+                data: existingDosage,
             });
         }
 

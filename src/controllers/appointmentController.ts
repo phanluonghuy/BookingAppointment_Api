@@ -67,6 +67,16 @@ export const appointmentController = {
         }
     },
 
+    getAppointmentDetails: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            await appointmentService.getAppointmentDetails(req, res);
+        } catch (error) {
+            next(error);
+        } finally {
+            console.log(`Route: ${req.url} || Method: ${req.method}`);
+        }
+    },
+
     // Get appointments by patient on a specific date
     getAppointmentsByPatientOnDate: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
