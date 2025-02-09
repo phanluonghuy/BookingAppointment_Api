@@ -93,7 +93,14 @@ export const ratingAndReviewService = {
         try {
             const { doctorId } = req.params;
 
-            const review = await Review.findOne({ doctorId }).populate("ratings");
+            const review = await Review.findOne({ doctorId })
+                .populate({
+                    path: "ratings",
+                    populate: {
+                        path: "patientId",
+                        model: "User",
+                    },
+                });
 
             if (!review) {
                 return res.json({

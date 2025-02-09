@@ -181,16 +181,6 @@ export const userController = {
         }
     },
 
-    getTopDoctors: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            await userService.getTopDoctors(req, res);
-        } catch (error) {
-            next(error);
-        } finally {
-            console.log(`Route: ${req.baseUrl}${req.path} || Method: ${req.method}`);
-        }
-    },
-
 
     // forgotPassword: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     //     try {
